@@ -166,12 +166,13 @@ func (s *WalletServer) CreateBalanceTransferRequest(w http.ResponseWriter, req *
 		return nil, err.Error(), -8
 	}
 
-	if user.Role != "reviewer" {
+	if reviewer.Role != "reviewer" {
 		return nil, "reviewer do not have role 'reviewer'", -9
 	}
 
+	id := uuid.New()
 	err = s.mysqlCli.AddBalanceTransferRequest(mysqlcli.BalanceTransferRequest{
-		Id:       uuid.New(),
+		Id:       id,
 		Creator:  user.Username,
 		Reviewer: reviewer.Username,
 		From:     input.From,
@@ -182,5 +183,7 @@ func (s *WalletServer) CreateBalanceTransferRequest(w http.ResponseWriter, req *
 		return nil, err.Error(), -10
 	}
 
-	return nil, "", 0
+	return types.RequestBalanceTransferOutput{
+		Id: id,
+	}, "", 0
 }

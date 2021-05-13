@@ -55,7 +55,7 @@ const (
 
 type BalanceTransferRequest struct {
 	Id       uuid.UUID `gorm:"column:id"`
-	Creator  string    `gorm:"column:creater"`
+	Creator  string    `gorm:"column:creator"`
 	Reviewer string    `gorm:"column:reviewer"`
 	From     string    `gorm:"column:from"`
 	To       string    `gorm:"column:to"`
@@ -95,7 +95,7 @@ func (cli *MysqlCli) RejectBalanceTransferRequest(request BalanceTransferRequest
 
 type BalanceWithdrawRequest struct {
 	Id       uuid.UUID `gorm:"column:id"`
-	Creator  string    `gorm:"column:creater"`
+	Creator  string    `gorm:"column:creator"`
 	Reviewer string    `gorm:"column:reviewer"`
 	Owner    string    `gorm:"column:owner"`
 	Miner    string    `gorm:"column:miner"`

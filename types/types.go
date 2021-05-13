@@ -31,3 +31,7 @@ type RequestBalanceTransferInput struct {
 	Amount   float64   `json:"amount"`
 	Reviewer string    `json:"reviewer"`
 }
+
+type RequestBalanceTransferOutput struct {
+	Id uuid.UUID `json:"id"`
+}
