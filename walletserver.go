@@ -93,6 +93,11 @@ func (s *WalletServer) Run() error {
 		Handler:  s.ListRolesRequest,
 		Method:   "POST",
 	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.ListBalanceRequestAPI,
+		Handler:  s.ListBalanceRequestRequest,
+		Method:   "POST",
+	})
 
 	httpdaemon.Run(s.config.Port)
 	return nil
@@ -198,7 +203,7 @@ func (s *WalletServer) CreateBalanceTransferRequest(w http.ResponseWriter, req *
 	}
 
 	id := uuid.New()
-	err = s.mysqlCli.AddBalanceTransferRequest(mysqlcli.BalanceTransferRequest{
+	err = s.mysqlCli.AddBalanceTransferRequest(types.BalanceTransferRequest{
 		Id:       id,
 		Creator:  user.Username,
 		Reviewer: reviewer.Username,
@@ -258,7 +263,7 @@ func (s *WalletServer) CreateBalanceWithdrawRequest(w http.ResponseWriter, req *
 	}
 
 	id := uuid.New()
-	err = s.mysqlCli.AddBalanceWithdrawRequest(mysqlcli.BalanceWithdrawRequest{
+	err = s.mysqlCli.AddBalanceWithdrawRequest(types.BalanceWithdrawRequest{
 		Id:       id,
 		Creator:  user.Username,
 		Reviewer: reviewer.Username,
@@ -326,6 +331,33 @@ func (s *WalletServer) ListReviewersRequest(w http.ResponseWriter, req *http.Req
 }
 
 func (s *WalletServer) ListRolesRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.UserInfoInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	_, err = s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	roles, err := s.authProxy.ListRoles()
+	if err != nil {
+		return nil, err.Error(), -4
+	}
+
+	return types.ListRolesOutput{
+		Roles: roles,
+	}, "", 0
+}
+
+func (s *WalletServer) ListBalanceRequestRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
 	b, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		return nil, err.Error(), -1

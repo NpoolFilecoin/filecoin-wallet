@@ -3,7 +3,7 @@ package walletmysql
 import (
 	"fmt"
 	log "github.com/EntropyPool/entropy-logger"
-	"github.com/google/uuid"
+	"github.com/NpoolFilecoin/filecoin-wallet/types"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"golang.org/x/xerrors"
@@ -53,24 +53,14 @@ const (
 	RequestRejected = "rejected"
 )
 
-type BalanceTransferRequest struct {
-	Id       uuid.UUID `gorm:"column:id"`
-	Creator  string    `gorm:"column:creator"`
-	Reviewer string    `gorm:"column:reviewer"`
-	From     string    `gorm:"column:from"`
-	To       string    `gorm:"column:to"`
-	Amount   float64   `gorm:"column:amount"`
-	Status   string    `gorm:"column:status"`
-}
-
-func (cli *MysqlCli) AddBalanceTransferRequest(request BalanceTransferRequest) error {
+func (cli *MysqlCli) AddBalanceTransferRequest(request types.BalanceTransferRequest) error {
 	request.Status = RequestCreated
 	rc := cli.db.Save(&request)
 	return rc.Error
 }
 
-func (cli *MysqlCli) QueryBalanceTransferRequests() ([]BalanceTransferRequest, error) {
-	requests := []BalanceTransferRequest{}
+func (cli *MysqlCli) QueryBalanceTransferRequests() ([]types.BalanceTransferRequest, error) {
+	requests := []types.BalanceTransferRequest{}
 	count := 0
 
 	rc := cli.db.Find(&requests).Count(&count)
@@ -81,36 +71,26 @@ func (cli *MysqlCli) QueryBalanceTransferRequests() ([]BalanceTransferRequest, e
 	return requests, rc.Error
 }
 
-func (cli *MysqlCli) ConfirmBalanceTransferRequest(request BalanceTransferRequest) error {
+func (cli *MysqlCli) ConfirmBalanceTransferRequest(request types.BalanceTransferRequest) error {
 	request.Status = RequestAccepted
 	rc := cli.db.Save(&request)
 	return rc.Error
 }
 
-func (cli *MysqlCli) RejectBalanceTransferRequest(request BalanceTransferRequest) error {
+func (cli *MysqlCli) RejectBalanceTransferRequest(request types.BalanceTransferRequest) error {
 	request.Status = RequestRejected
 	rc := cli.db.Save(&request)
 	return rc.Error
 }
 
-type BalanceWithdrawRequest struct {
-	Id       uuid.UUID `gorm:"column:id"`
-	Creator  string    `gorm:"column:creator"`
-	Reviewer string    `gorm:"column:reviewer"`
-	Owner    string    `gorm:"column:owner"`
-	Miner    string    `gorm:"column:miner"`
-	Amount   float64   `gorm:"column:amount"`
-	Status   string    `gorm:"column:status"`
-}
-
-func (cli *MysqlCli) AddBalanceWithdrawRequest(request BalanceWithdrawRequest) error {
+func (cli *MysqlCli) AddBalanceWithdrawRequest(request types.BalanceWithdrawRequest) error {
 	request.Status = RequestCreated
 	rc := cli.db.Save(&request)
 	return rc.Error
 }
 
-func (cli *MysqlCli) QueryBalanceWithdrawRequests() ([]BalanceWithdrawRequest, error) {
-	requests := []BalanceWithdrawRequest{}
+func (cli *MysqlCli) QueryBalanceWithdrawRequests() ([]types.BalanceWithdrawRequest, error) {
+	requests := []types.BalanceWithdrawRequest{}
 	count := 0
 
 	rc := cli.db.Find(&requests).Count(&count)
@@ -121,13 +101,13 @@ func (cli *MysqlCli) QueryBalanceWithdrawRequests() ([]BalanceWithdrawRequest, e
 	return requests, rc.Error
 }
 
-func (cli *MysqlCli) ConfirmBalanceWithdrawRequest(request BalanceWithdrawRequest) error {
+func (cli *MysqlCli) ConfirmBalanceWithdrawRequest(request types.BalanceWithdrawRequest) error {
 	request.Status = RequestAccepted
 	rc := cli.db.Save(&request)
 	return rc.Error
 }
 
-func (cli *MysqlCli) RejectBalanceWithdrawRequest(request BalanceWithdrawRequest) error {
+func (cli *MysqlCli) RejectBalanceWithdrawRequest(request types.BalanceWithdrawRequest) error {
 	request.Status = RequestRejected
 	rc := cli.db.Save(&request)
 	return rc.Error

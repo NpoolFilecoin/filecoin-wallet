@@ -69,3 +69,29 @@ type ListRolesInput = ListReviewersInput
 type ListRolesOutput struct {
 	Roles []string `json:"roles"`
 }
+
+type ListBalanceRequestInput = ListReviewersInput
+
+type BalanceTransferRequest struct {
+	Id       uuid.UUID `gorm:"column:id" json:"id"`
+	Creator  string    `gorm:"column:creator" json:"creator"`
+	Reviewer string    `gorm:"column:reviewer" json:"reviewer"`
+	From     string    `gorm:"column:from" json:"from"`
+	To       string    `gorm:"column:to" json:"to"`
+	Amount   float64   `gorm:"column:amount" json:"amount"`
+	Status   string    `gorm:"column:status" json:"status"`
+}
+
+type ListBanalceRequestOutput struct {
+	Requests []BalanceTransferRequest `json:"requests"`
+}
+
+type BalanceWithdrawRequest struct {
+	Id       uuid.UUID `gorm:"column:id" json:"id"`
+	Creator  string    `gorm:"column:creator" json:"creator"`
+	Reviewer string    `gorm:"column:reviewer" json:"reviewer"`
+	Owner    string    `gorm:"column:owner" json:"owner"`
+	Miner    string    `gorm:"column:miner" json:"miner"`
+	Amount   float64   `gorm:"column:amount" json:"amount"`
+	Status   string    `gorm:"column:status" json:"status"`
+}
