@@ -7,7 +7,7 @@ const (
 	RequestBalanceWithdrawAPI = "/api/v0/request/withdraw/balance"
 	ConfirmBalanceWithdwraAPI = "/api/v0/confirm/withdraw/balance"
 	RejectBalanceWithdwraAPI  = "/api/v0/confirm/withdraw/balance"
-	ListMyBalanceRequestAPI   = "/api/v0/list/balance/request"
+	ListBalanceRequestAPI     = "/api/v0/list/balance/request"
 	ListAccountsAPI           = "/api/v0/list/accounts"
 	AccountInfoAPI            = "/api/v0/account/info"
 	ListMinerAPI              = "/api/v0/list/miner"
@@ -16,4 +16,5 @@ const (
 	AddWithdrawHistoryAPI     = "/api/v0/add/withdraw"
 	UserLoginAPI              = "/api/v0/user/login"
 	AddUserAPI                = "/api/v0/add/user"
+	UserInfoAPI               = "/api/v0/user/info"
 )

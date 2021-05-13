@@ -45,3 +45,11 @@ type RequestBalanceWithdrawInput struct {
 }
 
 type RequestBalanceWithdrawOutput = RequestBalanceTransferOutput
+
+type UserInfoInput struct {
+	AuthCode uuid.UUID `json:"auth_code"`
+}
+
+type UserInfoOutput struct {
+	Username string `json:"username"`
+}

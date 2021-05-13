@@ -78,6 +78,11 @@ func (s *WalletServer) Run() error {
 		Handler:  s.CreateBalanceWithdrawRequest,
 		Method:   "POST",
 	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.UserInfoAPI,
+		Handler:  s.UserInfoRequest,
+		Method:   "POST",
+	})
 
 	httpdaemon.Run(s.config.Port)
 	return nil
@@ -250,5 +255,27 @@ func (s *WalletServer) CreateBalanceWithdrawRequest(w http.ResponseWriter, req *
 
 	return types.RequestBalanceWithdrawOutput{
 		Id: id,
+	}, "", 0
+}
+
+func (s *WalletServer) UserInfoRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.UserInfoInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	user, err := s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	return types.UserInfoOutput{
+		Username: user.Username,
 	}, "", 0
 }
