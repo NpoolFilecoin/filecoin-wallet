@@ -64,3 +64,8 @@ type ListReviewersInput struct {
 type ListReviewersOutput struct {
 	Reviewers []string `json:"reviewers"`
 }
+
+type ListRolesInput = ListReviewersInput
+type ListRolesOutput struct {
+	Roles []string `json:"roles"`
+}

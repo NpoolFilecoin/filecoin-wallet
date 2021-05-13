@@ -143,3 +143,7 @@ func (p *WalletAuthorizationProxy) ListReviewers() ([]string, error) {
 
 	return reviewers, nil
 }
+
+func (p *WalletAuthorizationProxy) ListRoles() ([]string, error) {
+	return p.users.Roles, nil
+}

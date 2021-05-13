@@ -18,4 +18,5 @@ const (
 	AddUserAPI                = "/api/v0/add/user"
 	UserInfoAPI               = "/api/v0/user/info"
 	ListReviewersAPI          = "/api/v0/list/reviewers"
+	ListRolesAPI              = "/api/v0/list/roles"
 )
