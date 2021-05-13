@@ -100,3 +100,28 @@ func (p *WalletAuthorizationProxy) Login(username string, password string) (uuid
 
 	return uuid.New(), xerrors.Errorf("username %v not exists or password wrong", username)
 }
+
+func (p *WalletAuthorizationProxy) UserByAuthCode(authCode uuid.UUID) (types.WalletUser, error) {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
+	user, ok := p.authCode[authCode]
+	if !ok {
+		return types.WalletUser{}, xerrors.Errorf("auth code is not exists")
+	}
+
+	return user, nil
+}
+
+func (p *WalletAuthorizationProxy) UserByUsername(username string) (types.WalletUser, error) {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
+	for _, user := range p.users.Users {
+		if user.Username == username {
+			return user, nil
+		}
+	}
+
+	return types.WalletUser{}, xerrors.Errorf("cannot find username %v", username)
+}

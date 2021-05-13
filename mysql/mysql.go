@@ -1,17 +1,12 @@
 package walletmysql
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	log "github.com/EntropyPool/entropy-logger"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"golang.org/x/xerrors"
-	"math/rand"
 )
 
 type MysqlConfig struct {
@@ -76,6 +71,7 @@ func (cli *MysqlCli) AddBalanceTransferRequest(request BalanceTransferRequest) e
 
 func (cli *MysqlCli) QueryBalanceTransferRequests() ([]BalanceTransferRequest, error) {
 	requests := []BalanceTransferRequest{}
+	count := 0
 
 	rc := cli.db.Find(&requests).Count(&count)
 	if count == 0 {
@@ -114,7 +110,8 @@ func (cli *MysqlCli) AddBalanceWithdrawRequest(request BalanceWithdrawRequest) e
 }
 
 func (cli *MysqlCli) QueryBalanceWithdrawRequests() ([]BalanceWithdrawRequest, error) {
-	requests := []BalanceTransferRequest{}
+	requests := []BalanceWithdrawRequest{}
+	count := 0
 
 	rc := cli.db.Find(&requests).Count(&count)
 	if count == 0 {

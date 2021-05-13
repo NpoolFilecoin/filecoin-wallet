@@ -23,3 +23,11 @@ type AddUserInput struct {
 	AuthCode uuid.UUID  `json:"auth_code"`
 	User     WalletUser `json:"user"`
 }
+
+type RequestBalanceTransferInput struct {
+	AuthCode uuid.UUID `json:"auth_code"`
+	From     string    `json:"from"`
+	To       string    `json:"to"`
+	Amount   float64   `json:"amount"`
+	Reviewer string    `json:"reviewer"`
+}
