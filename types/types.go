@@ -11,6 +11,8 @@ type UserLoginInput struct {
 
 type UserLoginOutput struct {
 	AuthCode uuid.UUID `json:"auth_code"`
+	Username string    `json:"username"`
+	Role     string    `json:"role"`
 }
 
 type WalletUser struct {
@@ -52,4 +54,5 @@ type UserInfoInput struct {
 
 type UserInfoOutput struct {
 	Username string `json:"username"`
+	Role     string `json:"role"`
 }

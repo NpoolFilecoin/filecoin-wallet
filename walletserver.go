@@ -109,8 +109,15 @@ func (s *WalletServer) UserLoginRequest(w http.ResponseWriter, req *http.Request
 		return nil, err.Error(), -4
 	}
 
+	user, err := s.authProxy.UserByUsername(input.Username)
+	if err != nil {
+		return nil, err.Error(), -5
+	}
+
 	return types.UserLoginOutput{
 		AuthCode: authCode,
+		Username: user.Username,
+		Role:     user.Role,
 	}, "", 0
 }
 
@@ -277,5 +284,6 @@ func (s *WalletServer) UserInfoRequest(w http.ResponseWriter, req *http.Request)
 
 	return types.UserInfoOutput{
 		Username: user.Username,
+		Role:     user.Role,
 	}, "", 0
 }
