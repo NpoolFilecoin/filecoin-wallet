@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	log "github.com/EntropyPool/entropy-logger"
+	mysqlcli "github.com/NpoolFilecoin/filecoin-wallet/mysql"
 	"github.com/NpoolFilecoin/filecoin-wallet/types"
 	"github.com/NpoolRD/http-daemon"
 	"io/ioutil"
