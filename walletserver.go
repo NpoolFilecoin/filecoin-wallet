@@ -363,7 +363,7 @@ func (s *WalletServer) ListBalanceRequestRequest(w http.ResponseWriter, req *htt
 		return nil, err.Error(), -1
 	}
 
-	input := types.UserInfoInput{}
+	input := types.ListBalanceRequestInput{}
 	err = json.Unmarshal(b, &input)
 	if err != nil {
 		return nil, err.Error(), -2
@@ -374,12 +374,11 @@ func (s *WalletServer) ListBalanceRequestRequest(w http.ResponseWriter, req *htt
 		return nil, err.Error(), -3
 	}
 
-	roles, err := s.authProxy.ListRoles()
-	if err != nil {
-		return nil, err.Error(), -4
-	}
+	transferReqs, _ := s.mysqlCli.QueryBalanceTransferRequests()
+	withdrawReqs, _ := s.mysqlCli.QueryBalanceWithdrawRequests()
 
-	return types.ListRolesOutput{
-		Roles: roles,
+	return types.ListBanalceRequestOutput{
+		TransferRequests: transferReqs,
+		WithdrawRequests: withdrawReqs,
 	}, "", 0
 }

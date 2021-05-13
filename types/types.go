@@ -82,10 +82,6 @@ type BalanceTransferRequest struct {
 	Status   string    `gorm:"column:status" json:"status"`
 }
 
-type ListBanalceRequestOutput struct {
-	Requests []BalanceTransferRequest `json:"requests"`
-}
-
 type BalanceWithdrawRequest struct {
 	Id       uuid.UUID `gorm:"column:id" json:"id"`
 	Creator  string    `gorm:"column:creator" json:"creator"`
@@ -94,4 +90,9 @@ type BalanceWithdrawRequest struct {
 	Miner    string    `gorm:"column:miner" json:"miner"`
 	Amount   float64   `gorm:"column:amount" json:"amount"`
 	Status   string    `gorm:"column:status" json:"status"`
+}
+
+type ListBanalceRequestOutput struct {
+	TransferRequests []BalanceTransferRequest `json:"transfer_requests"`
+	WithdrawRequests []BalanceWithdrawRequest `json:"withdraw_requests"`
 }
