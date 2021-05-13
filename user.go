@@ -125,3 +125,21 @@ func (p *WalletAuthorizationProxy) UserByUsername(username string) (types.Wallet
 
 	return types.WalletUser{}, xerrors.Errorf("cannot find username %v", username)
 }
+
+func (p *WalletAuthorizationProxy) ListReviewers() ([]string, error) {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
+	reviewers := []string{}
+	for _, user := range p.users.Users {
+		if user.Role == "reviewer" {
+			reviewers = append(reviewers, user.Username)
+		}
+	}
+
+	if len(reviewers) == 0 {
+		return nil, xerrors.Errorf("no reviewer available")
+	}
+
+	return reviewers, nil
+}

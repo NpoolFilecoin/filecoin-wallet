@@ -56,3 +56,11 @@ type UserInfoOutput struct {
 	Username string `json:"username"`
 	Role     string `json:"role"`
 }
+
+type ListReviewersInput struct {
+	AuthCode uuid.UUID `json:"auth_code"`
+}
+
+type ListReviewersOutput struct {
+	Reviewers []string `json:"reviewers"`
+}

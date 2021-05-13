@@ -83,6 +83,11 @@ func (s *WalletServer) Run() error {
 		Handler:  s.UserInfoRequest,
 		Method:   "POST",
 	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.ListReviewersAPI,
+		Handler:  s.ListReviewersRequest,
+		Method:   "POST",
+	})
 
 	httpdaemon.Run(s.config.Port)
 	return nil
@@ -285,5 +290,32 @@ func (s *WalletServer) UserInfoRequest(w http.ResponseWriter, req *http.Request)
 	return types.UserInfoOutput{
 		Username: user.Username,
 		Role:     user.Role,
+	}, "", 0
+}
+
+func (s *WalletServer) ListReviewersRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.UserInfoInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	_, err = s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	reviewers, err := s.authProxy.ListReviewers()
+	if err != nil {
+		return nil, err.Error(), -4
+	}
+
+	return types.ListReviewersOutput{
+		Reviewers: reviewers,
 	}, "", 0
 }
