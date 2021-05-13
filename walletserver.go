@@ -15,7 +15,8 @@ type WalletServerConfig struct {
 }
 
 type WalletServer struct {
-	config WalletServerConfig
+	config    WalletServerConfig
+	authProxy *WalletAuthorizationProxy
 }
 
 func NewWalletServer(cfgFile string) *WalletServer {
@@ -30,6 +31,12 @@ func NewWalletServer(cfgFile string) *WalletServer {
 	err = json.Unmarshal(b, &server.config)
 	if err != nil {
 		log.Errorf(log.Fields{}, "fail to parse %v: %v", cfgFile, err)
+		return nil
+	}
+
+	authProxy := NewWalletAuthorizationProxy(server.config.UserConfigFile)
+	if authProxy == nil {
+		log.Errorf(log.Fields{}, "cannot create authorization proxy")
 		return nil
 	}
 
