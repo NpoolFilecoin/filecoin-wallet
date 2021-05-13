@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/json"
 	log "github.com/EntropyPool/entropy-logger"
+	"golang.org/x/xerrors"
 	"io/ioutil"
+	"sync"
 )
 
 type WalletUser struct {
@@ -20,6 +22,7 @@ type WalletUsers struct {
 type WalletAuthorizationProxy struct {
 	users  WalletUsers
 	config string
+	mutex  sync.Mutex
 }
 
 func NewWalletAuthorizationProxy(userCfg string) *WalletAuthorizationProxy {
@@ -40,4 +43,32 @@ func NewWalletAuthorizationProxy(userCfg string) *WalletAuthorizationProxy {
 	}
 
 	return proxy
+}
+
+func (p *WalletAuthorizationProxy) AddUser(newUser WalletUser) error {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
+	validRole := false
+	for _, role := range p.users.Roles {
+		if newUser.Role == role {
+			validRole = true
+			break
+		}
+	}
+
+	if !validRole {
+		return xerrors.Errorf("role %v is not in %v", newUser.Role, p.users.Roles)
+	}
+
+	for _, user := range p.users.Users {
+		if user.Username == newUser.Username {
+			return xerrors.Errorf("username %v already exists", user.Username)
+		}
+	}
+
+	p.users.Users = append(p.users.Users, newUser)
+	b, _ := json.Marshal(p.users)
+
+	return ioutil.WriteFile(p.config, b, 0666)
 }
