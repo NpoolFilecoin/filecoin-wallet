@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	log "github.com/EntropyPool/entropy-logger"
+	"github.com/google/uuid"
 	"golang.org/x/xerrors"
 	"io/ioutil"
 	"sync"
@@ -20,14 +21,16 @@ type WalletUsers struct {
 }
 
 type WalletAuthorizationProxy struct {
-	users  WalletUsers
-	config string
-	mutex  sync.Mutex
+	users    WalletUsers
+	config   string
+	authCode map[uuid.UUID]WalletUser
+	mutex    sync.Mutex
 }
 
 func NewWalletAuthorizationProxy(userCfg string) *WalletAuthorizationProxy {
 	proxy := &WalletAuthorizationProxy{
-		config: userCfg,
+		config:   userCfg,
+		authCode: map[uuid.UUID]WalletUser{},
 	}
 
 	b, err := ioutil.ReadFile(userCfg)
@@ -45,9 +48,18 @@ func NewWalletAuthorizationProxy(userCfg string) *WalletAuthorizationProxy {
 	return proxy
 }
 
-func (p *WalletAuthorizationProxy) AddUser(newUser WalletUser) error {
+func (p *WalletAuthorizationProxy) AddUser(authCode uuid.UUID, newUser WalletUser) error {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
+
+	loginedUser, ok := p.authCode[authCode]
+	if !ok {
+		return xerrors.Errorf("login firstly to create new user")
+	}
+
+	if loginedUser.Role != "admin" {
+		return xerrors.Errorf("username %v's role %v cannot create new user", loginedUser.Username, loginedUser.Role)
+	}
 
 	validRole := false
 	for _, role := range p.users.Roles {
@@ -71,4 +83,25 @@ func (p *WalletAuthorizationProxy) AddUser(newUser WalletUser) error {
 	b, _ := json.Marshal(p.users)
 
 	return ioutil.WriteFile(p.config, b, 0666)
+}
+
+func (p *WalletAuthorizationProxy) Login(username string, password string) (uuid.UUID, error) {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
+	for authCode, user := range p.authCode {
+		if user.Username == username {
+			return authCode, nil
+		}
+	}
+
+	for _, user := range p.users.Users {
+		if user.Username == username && user.Password == password {
+			authCode := uuid.New()
+			p.authCode[authCode] = user
+			return authCode, nil
+		}
+	}
+
+	return uuid.New(), xerrors.Errorf("username %v not exists or password wrong", username)
 }

@@ -40,6 +40,8 @@ func NewWalletServer(cfgFile string) *WalletServer {
 		return nil
 	}
 
+	server.authProxy = authProxy
+
 	return server
 }
 
@@ -60,7 +62,29 @@ func (s *WalletServer) Run() error {
 }
 
 func (s *WalletServer) UserLoginRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
-	return nil, "", 0
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.UserLoginInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	if input.Username == "" {
+		return nil, "invalid username", -3
+	}
+
+	authCode, err := s.authProxy.Login(input.Username, input.Password)
+	if err != nil {
+		return nil, err.Error(), -4
+	}
+
+	return types.UserLoginOutput{
+		AuthCode: authCode,
+	}, "", 0
 }
 
 func (s *WalletServer) AddUserRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
