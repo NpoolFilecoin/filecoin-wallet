@@ -3,34 +3,29 @@ package main
 import (
 	"encoding/json"
 	log "github.com/EntropyPool/entropy-logger"
+	"github.com/NpoolFilecoin/filecoin-wallet/types"
 	"github.com/google/uuid"
 	"golang.org/x/xerrors"
 	"io/ioutil"
 	"sync"
 )
 
-type WalletUser struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
-}
-
 type WalletUsers struct {
-	Roles []string     `json:"roles"`
-	Users []WalletUser `json:"users"`
+	Roles []string           `json:"roles"`
+	Users []types.WalletUser `json:"users"`
 }
 
 type WalletAuthorizationProxy struct {
 	users    WalletUsers
 	config   string
-	authCode map[uuid.UUID]WalletUser
+	authCode map[uuid.UUID]types.WalletUser
 	mutex    sync.Mutex
 }
 
 func NewWalletAuthorizationProxy(userCfg string) *WalletAuthorizationProxy {
 	proxy := &WalletAuthorizationProxy{
 		config:   userCfg,
-		authCode: map[uuid.UUID]WalletUser{},
+		authCode: map[uuid.UUID]types.WalletUser{},
 	}
 
 	b, err := ioutil.ReadFile(userCfg)
@@ -48,7 +43,7 @@ func NewWalletAuthorizationProxy(userCfg string) *WalletAuthorizationProxy {
 	return proxy
 }
 
-func (p *WalletAuthorizationProxy) AddUser(authCode uuid.UUID, newUser WalletUser) error {
+func (p *WalletAuthorizationProxy) AddUser(authCode uuid.UUID, newUser types.WalletUser) error {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
 

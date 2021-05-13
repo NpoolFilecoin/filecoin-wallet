@@ -13,8 +13,13 @@ type UserLoginOutput struct {
 	AuthCode uuid.UUID `json:"auth_code"`
 }
 
+type WalletUser struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Role     string `json:"role"`
+}
+
 type AddUserInput struct {
-	AuthCode uuid.UUID `json:"auth_code"`
-	UserName string    `json:"username"`
-	Password string    `json:"password"`
+	AuthCode uuid.UUID  `json:"auth_code"`
+	User     WalletUser `json:"user"`
 }

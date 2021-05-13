@@ -88,5 +88,25 @@ func (s *WalletServer) UserLoginRequest(w http.ResponseWriter, req *http.Request
 }
 
 func (s *WalletServer) AddUserRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.AddUserInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	if input.User.Username == "" || input.User.Password == "" {
+		return nil, "invalid username or password", -3
+	}
+
+	err = s.authProxy.AddUser(input.AuthCode, input.User)
+	if err != nil {
+		return nil, err.Error(), -4
+	}
+
 	return nil, "", 0
 }

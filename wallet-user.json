@@ -1,6 +1,1 @@
-{
-  "roles": ["admin", "reviewer", "accounter", "visitor"],
-  "users": [
-    { "username": "admin", "password": "uoq2werkjkljl", "role": "admin" }
-  ]
-}
+{"roles":["admin","reviewer","accounter","visitor"],"users":[{"username":"admin","password":"uoq2werkjkljl","role":"admin"},{"username":"admin1","password":"uoq2werkjkljl","role":"accounter"}]}
