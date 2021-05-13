@@ -73,6 +73,11 @@ func (s *WalletServer) Run() error {
 		Handler:  s.CreateBalanceTransferRequest,
 		Method:   "POST",
 	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.RequestBalanceWithdrawAPI,
+		Handler:  s.CreateBalanceWithdrawRequest,
+		Method:   "POST",
+	})
 
 	httpdaemon.Run(s.config.Port)
 	return nil
@@ -184,6 +189,66 @@ func (s *WalletServer) CreateBalanceTransferRequest(w http.ResponseWriter, req *
 	}
 
 	return types.RequestBalanceTransferOutput{
+		Id: id,
+	}, "", 0
+}
+
+func (s *WalletServer) CreateBalanceWithdrawRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.RequestBalanceWithdrawInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	if input.Owner == "" || input.Miner == "" {
+		return nil, "empty owner or miner is not allowed", -3
+	}
+
+	if input.Amount <= 0 {
+		return nil, "invalid amount to be transfered", -4
+	}
+
+	if input.Reviewer == "" {
+		return nil, "reviewer is must", -5
+	}
+
+	user, err := s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -6
+	}
+
+	if user.Role != "accounter" {
+		return nil, "only role 'accounter' can transfer balance", -7
+	}
+
+	reviewer, err := s.authProxy.UserByUsername(input.Reviewer)
+	if err != nil {
+		return nil, err.Error(), -8
+	}
+
+	if reviewer.Role != "reviewer" {
+		return nil, "reviewer do not have role 'reviewer'", -9
+	}
+
+	id := uuid.New()
+	err = s.mysqlCli.AddBalanceWithdrawRequest(mysqlcli.BalanceWithdrawRequest{
+		Id:       id,
+		Creator:  user.Username,
+		Reviewer: reviewer.Username,
+		Owner:    input.Owner,
+		Miner:    input.Miner,
+		Amount:   input.Amount,
+	})
+	if err != nil {
+		return nil, err.Error(), -10
+	}
+
+	return types.RequestBalanceWithdrawOutput{
 		Id: id,
 	}, "", 0
 }

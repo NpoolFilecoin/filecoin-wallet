@@ -35,3 +35,13 @@ type RequestBalanceTransferInput struct {
 type RequestBalanceTransferOutput struct {
 	Id uuid.UUID `json:"id"`
 }
+
+type RequestBalanceWithdrawInput struct {
+	AuthCode uuid.UUID `json:"auth_code"`
+	Owner    string    `json:"owner"`
+	Miner    string    `json:"miner"`
+	Amount   float64   `json:"amount"`
+	Reviewer string    `json:"reviewer"`
+}
+
+type RequestBalanceWithdrawOutput = RequestBalanceTransferOutput
