@@ -145,6 +145,11 @@ func (s *WalletServer) Run() error {
 		Handler:  s.AddAccountRequest,
 		Method:   "POST",
 	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.ListAccountsAPI,
+		Handler:  s.ListAccountsRequest,
+		Method:   "POST",
+	})
 
 	httpdaemon.Run(s.config.Port)
 	return nil
@@ -687,5 +692,32 @@ func (s *WalletServer) ListMinerWalletTypesRequest(w http.ResponseWriter, req *h
 
 	return types.ListMinerWalletTypesOutput{
 		MinerWalletTypes: minerWalletTypes,
+	}, "", 0
+}
+
+func (s *WalletServer) ListAccountsRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.ListAccountsInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	_, err = s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	accounts, err := s.mysqlCli.QueryFilecoinAccounts()
+	if err != nil {
+		return nil, err.Error(), -4
+	}
+
+	return types.ListAccountsOutput{
+		Accounts: accounts,
 	}, "", 0
 }

@@ -172,3 +172,8 @@ type FilecoinAccount struct {
 	MinerID         string    `gorm:"column:miner_id" json:"miner_id"`
 	MinerWalletType string    `gorm:"column:miner_wallet_type" json:"miner_wallet_type"`
 }
+
+type ListAccountsInput = ListReviewersInput
+type ListAccountsOutput struct {
+	Accounts []FilecoinAccount `json:"accounts"`
+}

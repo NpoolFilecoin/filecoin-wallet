@@ -234,3 +234,15 @@ func (cli *MysqlCli) AddFilecoinAccount(account types.FilecoinAccount) (uuid.UUI
 
 	return account.Id, nil
 }
+
+func (cli *MysqlCli) QueryFilecoinAccounts() ([]types.FilecoinAccount, error) {
+	accounts := []types.FilecoinAccount{}
+	count := 0
+
+	rc := cli.db.Find(&accounts).Count(&count)
+	if count == 0 {
+		return nil, xerrors.Errorf("no filecoin account available")
+	}
+
+	return accounts, rc.Error
+}
