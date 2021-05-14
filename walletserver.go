@@ -345,6 +345,37 @@ func (s *WalletServer) ConfirmBalanceTransferRequest(w http.ResponseWriter, req 
 }
 
 func (s *WalletServer) RejectBalanceTransferRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.RejectBalanceTransferInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	user, err := s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	if user.Role != "reviewer" {
+		return nil, "only role 'reviewer' can confirm transfer balance", -4
+	}
+
+	request, err := s.mysqlCli.QueryBalanceTransferRequest(input.Id)
+	if err != nil {
+		return nil, err.Error(), -5
+	}
+
+	if request.Reviewer != user.Username {
+		return nil, "not right reviewer", -6
+	}
+
+	s.mysqlCli.RejectBalanceTransferRequest(request)
+
 	return nil, "", 0
 }
 

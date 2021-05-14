@@ -225,3 +225,5 @@ type ConfirmBalanceTransferInput struct {
 type ConfirmBalanceTransferOutput struct {
 	Message TransferMessage `json:"message"`
 }
+
+type RejectBalanceTransferInput = ConfirmBalanceTransferInput
