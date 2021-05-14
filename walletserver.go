@@ -411,14 +411,18 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 		return nil, err.Error(), -2
 	}
 
-	_, err = s.authProxy.UserByAuthCode(input.AuthCode)
+	user, err := s.authProxy.UserByAuthCode(input.AuthCode)
 	if err != nil {
 		return nil, err.Error(), -3
 	}
 
+	if user.Role != "admin" {
+		return nil, "only admin can add account", -4
+	}
+
 	addr, err := s.walletAPI.ImportWallet(input.PrivateKey)
 	if err != nil {
-		return nil, err.Error(), -4
+		return nil, err.Error(), -5
 	}
 
 	return types.AddAccountOutput{
