@@ -102,7 +102,7 @@ func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.Tra
 	time.Sleep(5 * time.Second)
 
 	// TODO: Get the message with CID, fill the message
-	msgs := []nativeMessage{}
+	lmsg := nativeMessage{}
 	cmd = exec.Command("/usr/local/bin/lotus", "--repo", "/opt/chain/lotus", "mpool", "pending", "--local", "--from", from, "--to", to)
 
 	var stdout1, stderr1 bytes.Buffer
@@ -119,36 +119,13 @@ func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.Tra
 	str = strings.Replace(str, " ", "", -1)
 	str = strings.Replace(str, "\\\"", "\"", -1)
 
-	maps := map[string]interface{}{}
-	err = json.Unmarshal([]byte(str), &maps)
+	err = json.Unmarshal([]byte(str), &lmsg)
 	if err != nil {
 		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to marshal pending message: %v [%v]", err, str)
 		return msg, nil
 	}
 
-	for k, v := range maps {
-		b, _ := json.Marshal(v)
-		log.Infof(log.Fields{}, "%v: %v", k, string(b))
-	}
-
-	err = json.Unmarshal([]byte(str), &msgs)
-	if err != nil {
-		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to marshal pending message: %v [%v]", err, str)
-		return msg, nil
-	}
-
-	found := false
-	for _, lmsg := range msgs {
-		if lmsg.CID.Cid == msg.Cid {
-			log.Infof(log.Fields{}, "msg '%v' is pending [%v]", msg.Cid, lmsg.ToString())
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		log.Infof(log.Fields{}, "msg '%v' is not pending", msg.Cid)
-	}
+	log.Infof(log.Fields{}, "msg '%v' is pending [%v]", msg.Cid, lmsg.ToString())
 
 	return msg, nil
 }
