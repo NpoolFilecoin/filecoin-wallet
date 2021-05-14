@@ -420,7 +420,13 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 		return nil, "only admin can add account", -4
 	}
 
-	addr, err := s.walletAPI.ImportWallet(input.PrivateKey)
+	bearerToken, err := ioutil.ReadFile("/opt/chain/lotus/token")
+	if err != nil {
+		log.Errorf(log.Fields{}, "cannot read token file")
+		bearerToken = []byte("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.EhlHl0JkXpI-1JYuyPHECkif7TyZEMRnADoBgbd2PBw")
+	}
+
+	addr, err := s.walletAPI.ImportWallet(input.PrivateKey, string(bearerToken))
 	if err != nil {
 		return nil, err.Error(), -5
 	}

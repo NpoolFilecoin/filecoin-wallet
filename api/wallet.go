@@ -21,6 +21,6 @@ func NewWalletAPI(config WalletAPIConfig) *WalletAPI {
 	return api
 }
 
-func (api *WalletAPI) ImportWallet(privateKey string) (string, error) {
-	return lotusapi.ImportWallet(api.config.Host, privateKey)
+func (api *WalletAPI) ImportWallet(privateKey string, bearerToken string) (string, error) {
+	return lotusapi.ImportWallet(api.config.Host, privateKey, bearerToken)
 }
