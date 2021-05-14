@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	log "github.com/EntropyPool/entropy-logger"
 	"github.com/NpoolDevOps/fbc-devops-peer/api/lotusapi"
 	"github.com/NpoolFilecoin/filecoin-wallet/types"
@@ -55,13 +56,20 @@ func (api *WalletAPI) WalletExists(address string) (bool, error) {
 }
 
 func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.TransferMessage, error) {
-	out, err := exec.Command("/usr/local/bin/lotus", "--repo", "/opt/chain/lotus", "send", "--from", from, to, amount).Output()
+	cmd := exec.Command("/usr/local/bin/lotus", "--repo", "/opt/chain/lotus", "send", "--from", from, to, amount)
+
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	err := cmd.Run()
 	if err != nil {
+		log.Errorf(log.Fields{}, "fail to run lotus send: %v | %v", err, string(stderr.Bytes()))
 		return types.TransferMessage{}, err
 	}
 
 	msg := types.TransferMessage{
-		Cid: string(out),
+		Cid: string(stdout.Bytes()),
 	}
 
 	// TODO: Get the message with CID, fill the message
