@@ -138,3 +138,13 @@ type FilecoinMiner struct {
 	CustomerID uuid.UUID `gorm:"customer_id" json:"customer_id"`
 	MinerID    string    `gorm:"miner_id" json:"miner_id"`
 }
+
+type ListMinersInput = ListReviewersInput
+type ListMinersOutput struct {
+	Miners []FilecoinMiner `json:"miners"`
+}
+
+type ListCustomersInput = ListReviewersInput
+type ListCustomersOutput struct {
+	Customers []FilecoinCustomer `json:"miners"`
+}

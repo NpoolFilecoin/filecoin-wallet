@@ -120,6 +120,16 @@ func (s *WalletServer) Run() error {
 		Method:   "POST",
 	})
 	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.ListMinersAPI,
+		Handler:  s.ListMinersRequest,
+		Method:   "POST",
+	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.ListCustomersAPI,
+		Handler:  s.ListCustomersRequest,
+		Method:   "POST",
+	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
 		Location: types.AddAccountAPI,
 		Handler:  s.AddAccountRequest,
 		Method:   "POST",
@@ -517,5 +527,59 @@ func (s *WalletServer) AddMinerRequest(w http.ResponseWriter, req *http.Request)
 		Id:           id,
 		CustomerName: input.CustomerName,
 		MinerID:      input.MinerID,
+	}, "", 0
+}
+
+func (s *WalletServer) ListMinersRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.ListMinersInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	_, err = s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	miners, err := s.mysqlCli.QueryFilecoinMiners()
+	if err != nil {
+		return nil, err.Error(), -4
+	}
+
+	return types.ListMinersOutput{
+		Miners: miners,
+	}, "", 0
+}
+
+func (s *WalletServer) ListCustomersRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.ListCustomersInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	_, err = s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	customers, err := s.mysqlCli.QueryFilecoinCustomers()
+	if err != nil {
+		return nil, err.Error(), -4
+	}
+
+	return types.ListCustomersOutput{
+		Customers: customers,
 	}, "", 0
 }

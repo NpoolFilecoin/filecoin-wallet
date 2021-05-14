@@ -10,7 +10,7 @@ const (
 	ListBalanceRequestAPI     = "/api/v0/list/balance/request"
 	ListAccountsAPI           = "/api/v0/list/accounts"
 	AccountInfoAPI            = "/api/v0/account/info"
-	ListMinerAPI              = "/api/v0/list/miner"
+	ListMinersAPI             = "/api/v0/list/miners"
 	AddAccountAPI             = "/api/v0/add/account"
 	AddMinerAPI               = "/api/v0/add/miner"
 	AddTransferHistoryAPI     = "/api/v0/add/transfer"
