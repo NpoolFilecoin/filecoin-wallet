@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	log "github.com/EntropyPool/entropy-logger"
+	"github.com/NpoolFilecoin/filecoin-wallet/api"
 	mysqlcli "github.com/NpoolFilecoin/filecoin-wallet/mysql"
 	"github.com/NpoolFilecoin/filecoin-wallet/types"
 	"github.com/NpoolRD/http-daemon"
@@ -15,12 +16,14 @@ type WalletServerConfig struct {
 	Port           int                  `json:"port"`
 	UserConfigFile string               `json:"user_config_file"`
 	MysqlConfig    mysqlcli.MysqlConfig `json:"mysql"`
+	WalletConfig   api.WalletAPIConfig  `json:"wallet"`
 }
 
 type WalletServer struct {
 	config    WalletServerConfig
 	authProxy *WalletAuthorizationProxy
 	mysqlCli  *mysqlcli.MysqlCli
+	walletAPI *api.WalletAPI
 }
 
 func NewWalletServer(cfgFile string) *WalletServer {
@@ -53,6 +56,14 @@ func NewWalletServer(cfgFile string) *WalletServer {
 	}
 
 	server.mysqlCli = mysqlCli
+
+	walletAPI := api.NewWalletAPI(server.config.WalletConfig)
+	if walletAPI == nil {
+		log.Errorf(log.Fields{}, "cannot create wallet api")
+		return nil
+	}
+
+	server.walletAPI = walletAPI
 
 	return server
 }
@@ -96,6 +107,11 @@ func (s *WalletServer) Run() error {
 	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
 		Location: types.ListBalanceRequestAPI,
 		Handler:  s.ListBalanceRequestRequest,
+		Method:   "POST",
+	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.AddAccountAPI,
+		Handler:  s.AddAccountRequest,
 		Method:   "POST",
 	})
 
@@ -380,5 +396,32 @@ func (s *WalletServer) ListBalanceRequestRequest(w http.ResponseWriter, req *htt
 	return types.ListBanalceRequestOutput{
 		TransferRequests: transferReqs,
 		WithdrawRequests: withdrawReqs,
+	}, "", 0
+}
+
+func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.AddAccountInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	_, err = s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	addr, err := s.walletAPI.ImportWallet(input.PrivateKey)
+	if err != nil {
+		return nil, err.Error(), -4
+	}
+
+	return types.AddAccountOutput{
+		Address: addr,
 	}, "", 0
 }

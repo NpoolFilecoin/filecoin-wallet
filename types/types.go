@@ -96,3 +96,12 @@ type ListBanalceRequestOutput struct {
 	TransferRequests []BalanceTransferRequest `json:"transfer_requests"`
 	WithdrawRequests []BalanceWithdrawRequest `json:"withdraw_requests"`
 }
+
+type AddAccountInput struct {
+	AuthCode   uuid.UUID `json:"auth_code"`
+	PrivateKey string    `json:"private_key"`
+}
+
+type AddAccountOutput struct {
+	Address string `json:"address"`
+}

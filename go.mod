@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/EntropyPool/entropy-logger v0.0.0-20210320022718-3091537e035f
+	github.com/NpoolDevOps/fbc-devops-peer v0.0.0-20210514032727-45df0af8ea29
 	github.com/NpoolRD/http-daemon v0.0.0-20210505073728-a1d91b8af9df
 	github.com/google/uuid v1.2.0
 	github.com/jinzhu/gorm v1.9.16

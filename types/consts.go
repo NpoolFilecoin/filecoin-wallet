@@ -12,6 +12,7 @@ const (
 	AccountInfoAPI            = "/api/v0/account/info"
 	ListMinerAPI              = "/api/v0/list/miner"
 	AddAccountAPI             = "/api/v0/add/account"
+	AddMinerAPI               = "/api/v0/add/miner"
 	AddTransferHistoryAPI     = "/api/v0/add/transfer"
 	AddWithdrawHistoryAPI     = "/api/v0/add/withdraw"
 	UserLoginAPI              = "/api/v0/user/login"
