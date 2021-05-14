@@ -207,3 +207,10 @@ type TransferMessage struct {
 	GasLimit  string `json:"gas_limit"`
 	GasFeeCap string `json:"gas_feecap"`
 }
+
+type TransferBalanceInput struct {
+	AuthCode uuid.UUID `json:"auth_code"`
+	From     string    `json:"from"`
+	To       string    `json:"to"`
+	Amount   string    `json:"amount"`
+}
