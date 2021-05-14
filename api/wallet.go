@@ -60,17 +60,21 @@ func (api *WalletAPI) WalletExists(address string) (bool, error) {
 	return lotusapi.WalletExists(api.config.Host, address, api.bearerToken)
 }
 
-type cid struct {
+type Cid struct {
 	Cid string `json:"/"`
 }
 
-type nativeMessage struct {
+type Message struct {
 	From       string
 	To         string
 	GasFeeCap  string
 	GasLimit   uint64
 	GasPremium string
-	CID        cid
+}
+
+type nativeMessage struct {
+	Message Message
+	CID     Cid
 }
 
 func (msg *nativeMessage) ToString() string {
