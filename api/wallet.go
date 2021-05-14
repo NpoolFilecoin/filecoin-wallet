@@ -102,8 +102,9 @@ func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.Tra
 	time.Sleep(2 * time.Second)
 
 	// TODO: Get the message with CID, fill the message
-	lmsg := nativeMessage{}
-	cmd = exec.Command("/usr/local/bin/lotus", "--repo", "/opt/chain/lotus", "mpool", "pending", "--local", "--from", from, "--to", to)
+	msgs := []nativeMessage{}
+	// cmd = exec.Command("/usr/local/bin/lotus", "--repo", "/opt/chain/lotus", "mpool", "pending", "--local", "--from", from, "--to", to)
+	cmd = exec.Command("/usr/local/bin/lotus", "--repo", "/opt/chain/lotus", "mpool", "pending", "--local")
 
 	var stdout1, stderr1 bytes.Buffer
 	cmd.Stdout = &stdout1
@@ -117,19 +118,29 @@ func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.Tra
 
 	str := strings.Replace(strings.TrimSpace(string(stdout1.Bytes())), "\n", "", -1)
 	str = strings.Replace(str, " ", "", -1)
-	str = strings.Replace(str, "\\\"", "\"", -1)
+	str = strings.Replace(str, "}{", "},{", -1)
+	str = fmt.Sprintf("[%v]", str)
 
-	err = json.Unmarshal([]byte(str), &lmsg)
+	err = json.Unmarshal([]byte(str), &msgs)
 	if err != nil {
 		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to marshal pending message: %v [%v]", err, str)
 		return msg, nil
 	}
 
-	if lmsg.CID.Cid == msg.Cid {
-		log.Infof(log.Fields{}, "msg '%v' is pending [%v]", msg.Cid, lmsg.ToString())
-		msg.GasFeeCap = lmsg.Message.GasFeeCap
-		msg.GasLimit = fmt.Sprintf("%v", lmsg.Message.GasLimit)
-		msg.GasPremium = lmsg.Message.GasPremium
+	found := false
+	for _, lmsg := range msgs {
+		if lmsg.CID.Cid == msg.Cid {
+			log.Infof(log.Fields{}, "msg '%v' is pending [%v]", msg.Cid, lmsg.ToString())
+			msg.GasFeeCap = lmsg.Message.GasFeeCap
+			msg.GasLimit = fmt.Sprintf("%v", lmsg.Message.GasLimit)
+			msg.GasPremium = lmsg.Message.GasPremium
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		log.Infof(log.Fields{}, "msg '%v' is not pending", msg.Cid)
 	}
 
 	return msg, nil
