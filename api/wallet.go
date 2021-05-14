@@ -99,7 +99,7 @@ func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.Tra
 
 	// TODO: Get the message with CID, fill the message
 	msgs := []nativeMessage{}
-	cmd = exec.Command("/usr/local/bin/lotus", "--repo", "/opt/chain/lotus", "mpool", "pending")
+	cmd = exec.Command("/usr/local/bin/lotus", "--repo", "/opt/chain/lotus", "mpool", "pending", "--local", "--from", from, "--to", to)
 
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -112,7 +112,7 @@ func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.Tra
 
 	err = json.Unmarshal([]byte(strings.TrimSpace(string(stdout.Bytes()))), &msgs)
 	if err != nil {
-		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to marshal pending message")
+		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to marshal pending message: %v [%v]", err, string(stdout.Bytes()))
 		return msg, nil
 	}
 
