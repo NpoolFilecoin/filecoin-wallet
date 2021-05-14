@@ -208,6 +208,7 @@ type TransferMessage struct {
 	GasFeeCap  string `json:"gas_feecap"`
 	GasPremium string `json:"gas_premium"`
 	Reviewer   string `json:"reviewer"`
+	Reference  string `json:"reference"`
 }
 
 type TransferBalanceInput struct {
