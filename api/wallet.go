@@ -119,6 +119,18 @@ func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.Tra
 	str = strings.Replace(str, " ", "", -1)
 	str = strings.Replace(str, "\\\"", "\"", -1)
 
+	maps := map[string]interface{}{}
+	err = json.Unmarshal([]byte(str), &maps)
+	if err != nil {
+		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to marshal pending message: %v [%v]", err, str)
+		return msg, nil
+	}
+
+	for k, v := range maps {
+		b, _ := json.Marshal(v)
+		log.Infof(log.Fields{}, "%v: %v", k, string(b))
+	}
+
 	err = json.Unmarshal([]byte(str), &msgs)
 	if err != nil {
 		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to marshal pending message: %v [%v]", err, str)
