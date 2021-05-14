@@ -195,3 +195,15 @@ type GetBalanceTransferTargetsOutput struct {
 	Address string    `json:"address"`
 	Targets []string  `json:"targets"`
 }
+
+type TransferMessage struct {
+	From      string `json:"from"`
+	FromOwner string `json:"from_owner"`
+	Creator   string `json:"creator"`
+	To        string `json:"to"`
+	ToOwner   string `json:"to_owner"`
+	Amount    string `json:"amount"`
+	Cid       string `json:"cid"`
+	GasLimit  string `json:"gas_limit"`
+	GasFeeCap string `json:"gas_feecap"`
+}

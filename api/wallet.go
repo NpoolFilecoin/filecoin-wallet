@@ -3,7 +3,9 @@ package api
 import (
 	log "github.com/EntropyPool/entropy-logger"
 	"github.com/NpoolDevOps/fbc-devops-peer/api/lotusapi"
+	"github.com/NpoolFilecoin/filecoin-wallet/types"
 	"io/ioutil"
+	"os/exec"
 )
 
 type WalletAPIConfig struct {
@@ -50,4 +52,24 @@ func (api *WalletAPI) MinerWalletTypes() []string {
 
 func (api *WalletAPI) WalletExists(address string) (bool, error) {
 	return lotusapi.WalletExists(api.config.Host, address, api.bearerToken)
+}
+
+func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.TransferMessage, error) {
+	out, err := exec.Command("/usr/local/bin/lotus", "--repo", "/opt/chain/lotus", "send", "--from", from, to, amount).Output()
+	if err != nil {
+		return types.TransferMessage{}, err
+	}
+
+	msg := types.TransferMessage{
+		Cid: string(out),
+	}
+
+	// TODO: Get the message with CID, fill the message
+
+	return msg, nil
+}
+
+func (api *WalletAPI) WithdrawBalance(minerId, owner string, amount string) (types.TransferMessage, error) {
+	// TODO: Send, get the message with CID, fill the message
+	return types.TransferMessage{}, nil
 }
