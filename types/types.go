@@ -98,12 +98,17 @@ type ListBanalceRequestOutput struct {
 }
 
 type AddAccountInput struct {
-	AuthCode   uuid.UUID `json:"auth_code"`
-	PrivateKey string    `json:"private_key"`
+	AuthCode        uuid.UUID `json:"auth_code"`
+	PrivateKey      string    `json:"private_key"`
+	WalletType      string    `json:"wallet_type"`
+	CustomerID      uuid.UUID `json:"customer_id"`
+	MinerID         string    `json:"miner_id"`
+	MinerWalletType string    `json:"miner_wallet_type"`
 }
 
 type AddAccountOutput struct {
-	Address string `json:"address"`
+	Id      uuid.UUID `json:"id"`
+	Address string    `json:"address"`
 }
 
 type AddCustomerInput struct {
@@ -157,4 +162,13 @@ type ListWalletTypesOutput struct {
 type ListMinerWalletTypesInput = ListReviewersInput
 type ListMinerWalletTypesOutput struct {
 	MinerWalletTypes []string `json:"miner_wallet_types"`
+}
+
+type FilecoinAccount struct {
+	Id              uuid.UUID `gorm:"column:id" json:"id"`
+	Address         string    `gorm:"column:address" json:"address"`
+	WalletType      string    `gorm:"column:wallet_type" json:"wallet_type"`
+	CustomerID      uuid.UUID `gorm:"column:customer_id" json:"customer_id"`
+	MinerID         string    `gorm:"column:miner_id" json:"miner_id"`
+	MinerWalletType string    `gorm:"column:miner_wallet_type" json:"miner_wallet_type"`
 }

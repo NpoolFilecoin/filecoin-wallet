@@ -465,8 +465,17 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 		return nil, "key is already imported", -6
 	}
 
+	id, err := s.mysqlCli.AddFilecoinAccount(types.FilecoinAccount{
+		Address:         addr,
+		WalletType:      input.WalletType,
+		CustomerID:      input.CustomerID,
+		MinerID:         input.MinerID,
+		MinerWalletType: input.MinerWalletType,
+	})
+
 	return types.AddAccountOutput{
 		Address: addr,
+		Id:      id,
 	}, "", 0
 }
 
