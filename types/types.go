@@ -177,3 +177,9 @@ type ListAccountsInput = ListReviewersInput
 type ListAccountsOutput struct {
 	Accounts []FilecoinAccount `json:"accounts"`
 }
+
+type SetBalanceTransferTargetsInput struct {
+	AuthCode uuid.UUID `json:"auth_code"`
+	Address  string    `json:"address"`
+	Targets  []string  `json:"targets"`
+}

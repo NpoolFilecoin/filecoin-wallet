@@ -150,6 +150,11 @@ func (s *WalletServer) Run() error {
 		Handler:  s.ListAccountsRequest,
 		Method:   "POST",
 	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.SetBalanceTransferTargetsAPI,
+		Handler:  s.SetBalanceTransferTargetsRequest,
+		Method:   "POST",
+	})
 
 	httpdaemon.Run(s.config.Port)
 	return nil
@@ -720,4 +725,40 @@ func (s *WalletServer) ListAccountsRequest(w http.ResponseWriter, req *http.Requ
 	return types.ListAccountsOutput{
 		Accounts: accounts,
 	}, "", 0
+}
+
+func (s *WalletServer) SetBalanceTransferTargetsRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.SetBalanceTransferTargetsInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	_, err = s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	_, err = s.mysqlCli.QueryFilecoinAccount(input.Address)
+	if err != nil {
+		return nil, err.Error(), -4
+	}
+
+	if len(input.Targets) == 0 {
+		return nil, "targets cannot be empty", -5
+	}
+
+	for _, addr := range input.Targets {
+		_, err := s.mysqlCli.QueryFilecoinAccount(addr)
+		if err != nil {
+			return nil, err.Error(), -6
+		}
+	}
+
+	return nil, "", 0
 }

@@ -235,6 +235,18 @@ func (cli *MysqlCli) AddFilecoinAccount(account types.FilecoinAccount) (uuid.UUI
 	return account.Id, nil
 }
 
+func (cli *MysqlCli) QueryFilecoinAccount(address string) (types.FilecoinAccount, error) {
+	account := types.FilecoinAccount{}
+	count := 0
+
+	rc := cli.db.Where("address = ?", address).Find(&account).Count(&count)
+	if count == 0 {
+		return account, xerrors.Errorf("no filecoin account '%v' available", address)
+	}
+
+	return account, rc.Error
+}
+
 func (cli *MysqlCli) QueryFilecoinAccounts() ([]types.FilecoinAccount, error) {
 	accounts := []types.FilecoinAccount{}
 	count := 0
@@ -245,4 +257,25 @@ func (cli *MysqlCli) QueryFilecoinAccounts() ([]types.FilecoinAccount, error) {
 	}
 
 	return accounts, rc.Error
+}
+
+type FilecoinTransferTarget struct {
+	Id      uuid.UUID `gorm:"column:id"`
+	Address string    `gorm:"column:address"`
+	Targets []string  `gorm:"column:targets"`
+}
+
+func (cli *MysqlCli) SetFilecoinTransferTarget(target FilecoinTransferTarget) error {
+	t := FilecoinTransferTarget{}
+	count := 0
+
+	cli.db.Where("address = ?", target.Address).Find(&t).Count(&count)
+	if 0 < count {
+		target.Id = t.Id
+	} else {
+		target.Id = uuid.New()
+	}
+
+	rc := cli.db.Save(&target)
+	return rc.Error
 }
