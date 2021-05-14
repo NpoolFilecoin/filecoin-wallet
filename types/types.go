@@ -101,7 +101,7 @@ type AddAccountInput struct {
 	AuthCode        uuid.UUID `json:"auth_code"`
 	PrivateKey      string    `json:"private_key"`
 	WalletType      string    `json:"wallet_type"`
-	CustomerID      uuid.UUID `json:"customer_id"`
+	CustomerName    string    `json:"customer_name"`
 	MinerID         string    `json:"miner_id"`
 	MinerWalletType string    `json:"miner_wallet_type"`
 }

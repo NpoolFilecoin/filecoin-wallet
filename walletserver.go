@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 type WalletServerConfig struct {
@@ -450,6 +451,42 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 		return nil, "only admin can add account", -4
 	}
 
+	validType := false
+	walletTypes := s.walletAPI.WalletTypes()
+	for _, walletType := range walletTypes {
+		if input.WalletType == walletType {
+			validType = true
+			break
+		}
+	}
+
+	if !validType {
+		return nil, "invalid wallet type", -5
+	}
+
+	validType = false
+	minerWalletTypes := s.walletAPI.MinerWalletTypes()
+	for _, walletType := range minerWalletTypes {
+		if input.MinerWalletType == walletType {
+			validType = true
+			break
+		}
+	}
+
+	if !validType {
+		return nil, "invalid miner wallet type", -6
+	}
+
+	_, err = s.mysqlCli.QueryFilecoinMiner(input.MinerID)
+	if err != nil {
+		return nil, err.Error(), -7
+	}
+
+	customerId, err := s.mysqlCli.QueryFilecoinCustomerId(input.CustomerName)
+	if err != nil {
+		return nil, err.Error(), -8
+	}
+
 	bearerToken, err := ioutil.ReadFile("/opt/chain/lotus/token")
 	if err != nil {
 		log.Errorf(log.Fields{}, "cannot read token file")
@@ -458,17 +495,19 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 
 	addr, err := s.walletAPI.ImportWallet(input.PrivateKey, string(bearerToken))
 	if err != nil {
-		return nil, err.Error(), -5
+		return nil, err.Error(), -9
 	}
 
 	if addr == "null" {
 		return nil, "key is already imported", -6
 	}
 
+	addr = strings.Replace(addr, "\"", "", -1)
+
 	id, err := s.mysqlCli.AddFilecoinAccount(types.FilecoinAccount{
 		Address:         addr,
 		WalletType:      input.WalletType,
-		CustomerID:      input.CustomerID,
+		CustomerID:      customerId,
 		MinerID:         input.MinerID,
 		MinerWalletType: input.MinerWalletType,
 	})
