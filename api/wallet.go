@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	log "github.com/EntropyPool/entropy-logger"
 	"github.com/NpoolDevOps/fbc-devops-peer/api/lotusapi"
@@ -10,6 +11,7 @@ import (
 	"io/ioutil"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 type WalletAPIConfig struct {
@@ -58,6 +60,24 @@ func (api *WalletAPI) WalletExists(address string) (bool, error) {
 	return lotusapi.WalletExists(api.config.Host, address, api.bearerToken)
 }
 
+type cid struct {
+	Cid string `json:"/"`
+}
+
+type nativeMessage struct {
+	From       string
+	To         string
+	GasFeeCap  string
+	GasLimit   uint64
+	GasPremium string
+	CID        cid
+}
+
+func (msg *nativeMessage) ToString() string {
+	b, _ := json.Marshal(msg)
+	return string(b)
+}
+
 func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.TransferMessage, error) {
 	cmd := exec.Command("/usr/local/bin/lotus", "--repo", "/opt/chain/lotus", "send", "--from", from, to, amount)
 
@@ -75,7 +95,39 @@ func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.Tra
 		Cid: strings.TrimSpace(string(stdout.Bytes())),
 	}
 
+	time.Sleep(5 * time.Second)
+
 	// TODO: Get the message with CID, fill the message
+	msgs := []nativeMessage{}
+	cmd = exec.Command("/usr/local/bin/lotus", "--repo", "/opt/chain/lotus", "mpool", "pending")
+
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	err = cmd.Run()
+	if err != nil {
+		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to get pending message")
+		return msg, nil
+	}
+
+	err = json.Unmarshal([]byte(strings.TrimSpace(string(stdout.Bytes()))), &msgs)
+	if err != nil {
+		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to marshal pending message")
+		return msg, nil
+	}
+
+	found := false
+	for _, lmsg := range msgs {
+		if lmsg.CID.Cid == msg.Cid {
+			log.Infof(log.Fields{}, "msg '%v' is pending [%v]", msg.Cid, lmsg.ToString())
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		log.Infof(log.Fields{}, "msg '%v' is not pending", msg.Cid)
+	}
 
 	return msg, nil
 }
