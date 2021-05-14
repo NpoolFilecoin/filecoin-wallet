@@ -522,6 +522,8 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 		if addr == "null" {
 			return nil, "key is already imported", -10
 		}
+
+		addr = strings.Replace(addr, "\"", "", -1)
 		if addr != input.Address {
 			return nil, "input address is not what you imported", -11
 		}
@@ -529,8 +531,6 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 		log.Infof(log.Fields{}, "address '%v' exists, just update database", input.Address)
 		addr = input.Address
 	}
-
-	addr = strings.Replace(addr, "\"", "", -1)
 
 	id, err := s.mysqlCli.AddFilecoinAccount(types.FilecoinAccount{
 		Address:         addr,
