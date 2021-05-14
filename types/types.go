@@ -197,15 +197,16 @@ type GetBalanceTransferTargetsOutput struct {
 }
 
 type TransferMessage struct {
-	From      string `json:"from"`
-	FromOwner string `json:"from_owner"`
-	Creator   string `json:"creator"`
-	To        string `json:"to"`
-	ToOwner   string `json:"to_owner"`
-	Amount    string `json:"amount"`
-	Cid       string `json:"cid"`
-	GasLimit  string `json:"gas_limit"`
-	GasFeeCap string `json:"gas_feecap"`
+	From       string `json:"from"`
+	FromOwner  string `json:"from_owner"`
+	Creator    string `json:"creator"`
+	To         string `json:"to"`
+	ToOwner    string `json:"to_owner"`
+	Amount     string `json:"amount"`
+	Cid        string `json:"cid"`
+	GasLimit   string `json:"gas_limit"`
+	GasFeeCap  string `json:"gas_feecap"`
+	GasPremium string `json:"gas_premium"`
 }
 
 type TransferBalanceInput struct {

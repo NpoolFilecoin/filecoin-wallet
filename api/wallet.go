@@ -99,7 +99,7 @@ func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.Tra
 		Cid: strings.TrimSpace(string(stdout.Bytes())),
 	}
 
-	time.Sleep(5 * time.Second)
+	time.Sleep(2 * time.Second)
 
 	// TODO: Get the message with CID, fill the message
 	lmsg := nativeMessage{}
@@ -125,7 +125,12 @@ func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.Tra
 		return msg, nil
 	}
 
-	log.Infof(log.Fields{}, "msg '%v' is pending [%v]", msg.Cid, lmsg.ToString())
+	if lmsg.CID.Cid == msg.Cid {
+		log.Infof(log.Fields{}, "msg '%v' is pending [%v]", msg.Cid, lmsg.ToString())
+		msg.GasFeeCap = lmsg.Message.GasFeeCap
+		msg.GasLimit = fmt.Sprintf("%v", lmsg.Message.GasLimit)
+		msg.GasPremium = lmsg.Message.GasPremium
+	}
 
 	return msg, nil
 }
