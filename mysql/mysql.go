@@ -4,6 +4,7 @@ import (
 	"fmt"
 	log "github.com/EntropyPool/entropy-logger"
 	"github.com/NpoolFilecoin/filecoin-wallet/types"
+	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"golang.org/x/xerrors"
@@ -113,9 +114,31 @@ func (cli *MysqlCli) RejectBalanceWithdrawRequest(request types.BalanceWithdrawR
 	return rc.Error
 }
 
-func (cli *MysqlCli) AddFilecoinCustomer(customer types.FilecoinCustomer) error {
-	rc := cli.db.Save(&customer)
-	return rc.Error
+func (cli *MysqlCli) AddFilecoinCustomer(customerName string) (uuid.UUID, error) {
+	customer := types.FilecoinCustomer{}
+	count := 0
+
+	cli.db.Where("customer_name = ?", customerName).Find(&customer).Count(&count)
+	if 0 < count {
+		return customer.Id, nil
+	}
+
+	rc := cli.db.Save(&types.FilecoinCustomer{
+		Id:           uuid.New(),
+		CustomerName: customerName,
+	})
+	if rc.Error != nil {
+		return uuid.New(), rc.Error
+	}
+
+	rc = cli.db.Where("customer_name = ?", customerName).Find(&customer).Count(&count)
+	if rc.Error != nil {
+		return uuid.New(), rc.Error
+	}
+	if count == 0 {
+		return uuid.New(), xerrors.Errorf("cannot find customer after insterted")
+	}
+	return customer.Id, nil
 }
 
 func (cli *MysqlCli) QueryFilecoinCustomers() ([]types.FilecoinCustomer, error) {
@@ -130,9 +153,32 @@ func (cli *MysqlCli) QueryFilecoinCustomers() ([]types.FilecoinCustomer, error) 
 	return customers, rc.Error
 }
 
-func (cli *MysqlCli) AddFilecoinMiner(miner types.FilecoinMiner) error {
-	rc := cli.db.Save(&miner)
-	return rc.Error
+func (cli *MysqlCli) AddFilecoinMiner(minerId string, customerId uuid.UUID) (uuid.UUID, error) {
+	miner := types.FilecoinMiner{}
+	count := 0
+
+	cli.db.Where("miner_id = ?", minerId).Find(&miner).Count(&count)
+	if 0 < count {
+		return miner.Id, nil
+	}
+
+	rc := cli.db.Save(&types.FilecoinMiner{
+		Id:         uuid.New(),
+		MinerID:    minerId,
+		CustomerID: customerId,
+	})
+	if rc.Error != nil {
+		return uuid.New(), rc.Error
+	}
+
+	rc = cli.db.Where("miner_id = ?", minerId).Find(&miner).Count(&count)
+	if rc.Error != nil {
+		return uuid.New(), rc.Error
+	}
+	if count == 0 {
+		return uuid.New(), xerrors.Errorf("cannot find miner after insterted")
+	}
+	return miner.Id, nil
 }
 
 func (cli *MysqlCli) QueryFilecoinMiners() ([]types.FilecoinMiner, error) {

@@ -446,5 +446,33 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 }
 
 func (s *WalletServer) AddCustomerRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
-	return nil, "", 0
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.AddCustomerInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	user, err := s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	if user.Role != "admin" {
+		return nil, "only admin can add customer", -4
+	}
+
+	id, err := s.mysqlCli.AddFilecoinCustomer(input.CustomerName)
+	if err != nil {
+		return nil, err.Error(), -5
+	}
+
+	return types.AddCustomerOutput{
+		Id:           id,
+		CustomerName: input.CustomerName,
+	}, "", 0
 }
