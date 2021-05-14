@@ -148,3 +148,13 @@ type ListCustomersInput = ListReviewersInput
 type ListCustomersOutput struct {
 	Customers []FilecoinCustomer `json:"miners"`
 }
+
+type ListWalletTypesInput = ListReviewersInput
+type ListWalletTypesOutput struct {
+	WalletTypes []string `json:"wallet_types"`
+}
+
+type ListMinerWalletTypesInput = ListReviewersInput
+type ListMinerWalletTypesOutput struct {
+	MinerWalletTypes []string `json:"miner_wallet_types"`
+}

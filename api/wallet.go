@@ -11,15 +11,15 @@ type WalletAPIConfig struct {
 
 type WalletAPI struct {
 	config           WalletAPIConfig
-	WalletTypes      []string
-	MinerWalletTypes []string
+	walletTypes      []string
+	minerWalletTypes []string
 }
 
 func NewWalletAPI(config WalletAPIConfig) *WalletAPI {
 	api := &WalletAPI{
 		config:           config,
-		WalletTypes:      []string{"accounting", "miner"},
-		MinerWalletTypes: []string{"owner", "worker", "post"},
+		walletTypes:      []string{"accounting", "miner"},
+		minerWalletTypes: []string{"owner", "worker", "post"},
 	}
 
 	return api
@@ -27,4 +27,12 @@ func NewWalletAPI(config WalletAPIConfig) *WalletAPI {
 
 func (api *WalletAPI) ImportWallet(privateKey string, bearerToken string) (string, error) {
 	return lotusapi.ImportWallet(api.config.Host, privateKey, bearerToken)
+}
+
+func (api *WalletAPI) WalletTypes() []string {
+	return api.walletTypes
+}
+
+func (api *WalletAPI) MinerWalletTypes() []string {
+	return api.minerWalletTypes
 }

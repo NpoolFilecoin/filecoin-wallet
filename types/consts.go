@@ -21,6 +21,7 @@ const (
 	ListReviewersAPI          = "/api/v0/list/reviewers"
 	ListRolesAPI              = "/api/v0/list/roles"
 	ListWalletTypesAPI        = "/api/v0/list/wallet/types"
+	ListMinerWalletTypesAPI   = "/api/v0/list/miner/wallet/types"
 	AddCustomerAPI            = "/api/v0/add/customer"
 	ListCustomersAPI          = "/api/v0/list/customers"
 )

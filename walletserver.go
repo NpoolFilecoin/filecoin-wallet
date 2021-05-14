@@ -130,6 +130,16 @@ func (s *WalletServer) Run() error {
 		Method:   "POST",
 	})
 	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.ListWalletTypesAPI,
+		Handler:  s.ListWalletTypesRequest,
+		Method:   "POST",
+	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.ListMinerWalletTypesAPI,
+		Handler:  s.ListMinerWalletTypesRequest,
+		Method:   "POST",
+	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
 		Location: types.AddAccountAPI,
 		Handler:  s.AddAccountRequest,
 		Method:   "POST",
@@ -581,5 +591,53 @@ func (s *WalletServer) ListCustomersRequest(w http.ResponseWriter, req *http.Req
 
 	return types.ListCustomersOutput{
 		Customers: customers,
+	}, "", 0
+}
+
+func (s *WalletServer) ListWalletTypesRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.ListWalletTypesInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	_, err = s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	walletTypes := s.walletAPI.WalletTypes()
+
+	return types.ListWalletTypesOutput{
+		WalletTypes: walletTypes,
+	}, "", 0
+}
+
+func (s *WalletServer) ListMinerWalletTypesRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.ListCustomersInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	_, err = s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	minerWalletTypes := s.walletAPI.MinerWalletTypes()
+
+	return types.ListMinerWalletTypesOutput{
+		MinerWalletTypes: minerWalletTypes,
 	}, "", 0
 }
