@@ -110,6 +110,11 @@ func (s *WalletServer) Run() error {
 		Method:   "POST",
 	})
 	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.AddCustomerAPI,
+		Handler:  s.AddCustomerRequest,
+		Method:   "POST",
+	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
 		Location: types.AddAccountAPI,
 		Handler:  s.AddAccountRequest,
 		Method:   "POST",
@@ -438,4 +443,8 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 	return types.AddAccountOutput{
 		Address: addr,
 	}, "", 0
+}
+
+func (s *WalletServer) AddCustomerRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	return nil, "", 0
 }

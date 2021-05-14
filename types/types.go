@@ -105,3 +105,36 @@ type AddAccountInput struct {
 type AddAccountOutput struct {
 	Address string `json:"address"`
 }
+
+type AddCustomerInput struct {
+	AuthCode     uuid.UUID `json:"auth_code"`
+	CustomerName string    `json:"customer_name"`
+}
+
+type AddCustomerOutput struct {
+	Id           uuid.UUID `json:"id"`
+	CustomerName string    `json:"customer_name"`
+}
+
+type AddMinerInput struct {
+	AuthCode     uuid.UUID `json:"auth_code"`
+	CustomerName string    `json:"customer_name"`
+	MinerID      string    `json:"miner_id"`
+}
+
+type AddMinerOutput struct {
+	Id           uuid.UUID `json:"id"`
+	MinerID      string    `json:"miner_id"`
+	CustomerName string    `json:"customer_name"`
+}
+
+type FilecoinCustomer struct {
+	Id           uuid.UUID `gorm:"column:id" json:"id"`
+	CustomerName string    `gorm:"column:customer_name" json:"customer_name"`
+}
+
+type FilecoinMiner struct {
+	Id         uuid.UUID `gorm:"column:id" json:"id"`
+	CustomerID uuid.UUID `gorm:"customer_id" json:"customer_id"`
+	MinerID    string    `gorm:"miner_id" json:"miner_id"`
+}

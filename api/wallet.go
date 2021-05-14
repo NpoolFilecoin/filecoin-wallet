@@ -10,12 +10,16 @@ type WalletAPIConfig struct {
 }
 
 type WalletAPI struct {
-	config WalletAPIConfig
+	config           WalletAPIConfig
+	WalletTypes      []string
+	MinerWalletTypes []string
 }
 
 func NewWalletAPI(config WalletAPIConfig) *WalletAPI {
 	api := &WalletAPI{
-		config: config,
+		config:           config,
+		WalletTypes:      []string{"accounting", "miner"},
+		MinerWalletTypes: []string{"owner", "worker", "post"},
 	}
 
 	return api

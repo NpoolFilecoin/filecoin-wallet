@@ -112,3 +112,37 @@ func (cli *MysqlCli) RejectBalanceWithdrawRequest(request types.BalanceWithdrawR
 	rc := cli.db.Save(&request)
 	return rc.Error
 }
+
+func (cli *MysqlCli) AddFilecoinCustomer(customer types.FilecoinCustomer) error {
+	rc := cli.db.Save(&customer)
+	return rc.Error
+}
+
+func (cli *MysqlCli) QueryFilecoinCustomers() ([]types.FilecoinCustomer, error) {
+	customers := []types.FilecoinCustomer{}
+	count := 0
+
+	rc := cli.db.Find(&customers).Count(&count)
+	if count == 0 {
+		return nil, xerrors.Errorf("cannot find any customer")
+	}
+
+	return customers, rc.Error
+}
+
+func (cli *MysqlCli) AddFilecoinMiner(miner types.FilecoinMiner) error {
+	rc := cli.db.Save(&miner)
+	return rc.Error
+}
+
+func (cli *MysqlCli) QueryFilecoinMiners() ([]types.FilecoinMiner, error) {
+	miners := []types.FilecoinMiner{}
+	count := 0
+
+	rc := cli.db.Find(&miners).Count(&count)
+	if count == 0 {
+		return nil, xerrors.Errorf("cannot find any customer")
+	}
+
+	return miners, rc.Error
+}
