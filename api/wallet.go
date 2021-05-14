@@ -2,9 +2,11 @@ package api
 
 import (
 	"bytes"
+	"fmt"
 	log "github.com/EntropyPool/entropy-logger"
 	"github.com/NpoolDevOps/fbc-devops-peer/api/lotusapi"
 	"github.com/NpoolFilecoin/filecoin-wallet/types"
+	"golang.org/x/xerrors"
 	"io/ioutil"
 	"os/exec"
 )
@@ -34,7 +36,7 @@ func NewWalletAPI(config WalletAPIConfig) *WalletAPI {
 		bearerToken = []byte("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.EhlHl0JkXpI-1JYuyPHECkif7TyZEMRnADoBgbd2PBw")
 	}
 
-	api.bearerToken = string(bearerToken)
+	api.bearerToken = fmt.Sprintf("Bearer %v", string(bearerToken))
 
 	return api
 }
