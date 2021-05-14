@@ -101,18 +101,19 @@ func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.Tra
 	msgs := []nativeMessage{}
 	cmd = exec.Command("/usr/local/bin/lotus", "--repo", "/opt/chain/lotus", "mpool", "pending", "--local", "--from", from, "--to", to)
 
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
+	var stdout1, stderr1 bytes.Buffer
+	cmd.Stdout = &stdout1
+	cmd.Stderr = &stderr1
 
 	err = cmd.Run()
 	if err != nil {
-		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to get pending message")
+		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to get pending message: %v", string(stderr1.Bytes()))
 		return msg, nil
 	}
 
-	err = json.Unmarshal([]byte(strings.TrimSpace(string(stdout.Bytes()))), &msgs)
+	err = json.Unmarshal([]byte(strings.TrimSpace(string(stdout1.Bytes()))), &msgs)
 	if err != nil {
-		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to marshal pending message: %v [%v]", err, string(stdout.Bytes()))
+		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to marshal pending message: %v [%v]", err, string(stdout1.Bytes()))
 		return msg, nil
 	}
 
