@@ -262,7 +262,7 @@ func (cli *MysqlCli) QueryFilecoinAccounts() ([]types.FilecoinAccount, error) {
 type FilecoinTransferTarget struct {
 	Id      uuid.UUID `gorm:"column:id"`
 	Address string    `gorm:"column:address"`
-	Targets string    `gorm:"column:targets"`
+	Targets string    `gorm:"column:target_addresses"`
 }
 
 func (cli *MysqlCli) SetFilecoinTransferTarget(target FilecoinTransferTarget) error {
