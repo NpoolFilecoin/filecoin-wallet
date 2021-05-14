@@ -431,6 +431,10 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 		return nil, err.Error(), -5
 	}
 
+	if addr == "null" {
+		return nil, "key is already imported", -6
+	}
+
 	return types.AddAccountOutput{
 		Address: addr,
 	}, "", 0
