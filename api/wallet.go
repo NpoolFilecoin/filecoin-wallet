@@ -113,6 +113,7 @@ func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.Tra
 
 	str := strings.Replace(strings.TrimSpace(string(stdout1.Bytes())), "\n", "", -1)
 	str = strings.Replace(str, " ", "", -1)
+	str = strings.Replace(str, "\\\"", "\"", -1)
 
 	err = json.Unmarshal([]byte(str), &msgs)
 	if err != nil {
