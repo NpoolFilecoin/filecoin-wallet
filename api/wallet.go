@@ -116,7 +116,7 @@ func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.Tra
 
 	err = json.Unmarshal([]byte(str), &msgs)
 	if err != nil {
-		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to marshal pending message: %v [%v]", err, string(stdout1.Bytes()))
+		log.Errorf(log.Fields{}, "balance transfer is successful, but fail to marshal pending message: %v [%v]", err, str)
 		return msg, nil
 	}
 
