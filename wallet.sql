@@ -57,7 +57,7 @@ CREATE TABLE if not exists `filecoin_customer` (
 -- ----------------------------
 -- Table structure for filecoin_miner
 -- ----------------------------
-CREATE TABLE if not exists `filecoin_customer` (
+CREATE TABLE if not exists `filecoin_miner` (
   `id` varchar(64) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `customer_id` varchar(64) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `miner_id` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL COMMENT '',

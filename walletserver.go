@@ -115,6 +115,11 @@ func (s *WalletServer) Run() error {
 		Method:   "POST",
 	})
 	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.AddMinerAPI,
+		Handler:  s.AddMinerRequest,
+		Method:   "POST",
+	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
 		Location: types.AddAccountAPI,
 		Handler:  s.AddAccountRequest,
 		Method:   "POST",
@@ -474,5 +479,43 @@ func (s *WalletServer) AddCustomerRequest(w http.ResponseWriter, req *http.Reque
 	return types.AddCustomerOutput{
 		Id:           id,
 		CustomerName: input.CustomerName,
+	}, "", 0
+}
+
+func (s *WalletServer) AddMinerRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.AddMinerInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	user, err := s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	if user.Role != "admin" {
+		return nil, "only admin can add customer", -4
+	}
+
+	customerId, err := s.mysqlCli.QueryFilecoinCustomerId(input.CustomerName)
+	if err != nil {
+		return nil, err.Error(), -5
+	}
+
+	id, err := s.mysqlCli.AddFilecoinMiner(input.MinerID, customerId)
+	if err != nil {
+		return nil, err.Error(), -6
+	}
+
+	return types.AddMinerOutput{
+		Id:           id,
+		CustomerName: input.CustomerName,
+		MinerID:      input.MinerID,
 	}, "", 0
 }

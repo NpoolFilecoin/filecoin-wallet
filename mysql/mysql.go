@@ -141,6 +141,18 @@ func (cli *MysqlCli) AddFilecoinCustomer(customerName string) (uuid.UUID, error)
 	return customer.Id, nil
 }
 
+func (cli *MysqlCli) QueryFilecoinCustomerId(customerName string) (uuid.UUID, error) {
+	customer := types.FilecoinCustomer{}
+	count := 0
+
+	cli.db.Where("customer_name = ?", customerName).Find(&customer).Count(&count)
+	if 0 < count {
+		return customer.Id, nil
+	}
+
+	return uuid.New(), xerrors.Errorf("cannot find customer '%v'", customerName)
+}
+
 func (cli *MysqlCli) QueryFilecoinCustomers() ([]types.FilecoinCustomer, error) {
 	customers := []types.FilecoinCustomer{}
 	count := 0
@@ -179,6 +191,18 @@ func (cli *MysqlCli) AddFilecoinMiner(minerId string, customerId uuid.UUID) (uui
 		return uuid.New(), xerrors.Errorf("cannot find miner after insterted")
 	}
 	return miner.Id, nil
+}
+
+func (cli *MysqlCli) QueryFilecoinMiner(minerId string) (uuid.UUID, error) {
+	miner := types.FilecoinMiner{}
+	count := 0
+
+	cli.db.Where("miner_id = ?", minerId).Find(&miner).Count(&count)
+	if 0 < count {
+		return miner.Id, nil
+	}
+
+	return uuid.New(), xerrors.Errorf("cannot find miner '%v'", minerId)
 }
 
 func (cli *MysqlCli) QueryFilecoinMiners() ([]types.FilecoinMiner, error) {
