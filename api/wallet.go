@@ -1,7 +1,7 @@
 package api
 
 import (
-	_ "github.com/NpoolDevOps/fbc-devops-peer/api/lotusapi"
+	"github.com/NpoolDevOps/fbc-devops-peer/api/lotusapi"
 )
 
 type WalletAPIConfig struct {
@@ -22,5 +22,5 @@ func NewWalletAPI(config WalletAPIConfig) *WalletAPI {
 }
 
 func (api *WalletAPI) ImportWallet(privateKey string) (string, error) {
-	return "", nil
+	return lotusapi.ImportWallet(api.config.Host, privateKey)
 }
