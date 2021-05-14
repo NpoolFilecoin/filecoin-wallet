@@ -65,7 +65,7 @@ func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.Tra
 	err := cmd.Run()
 	if err != nil {
 		log.Errorf(log.Fields{}, "fail to run lotus send: %v | %v", err, string(stderr.Bytes()))
-		return types.TransferMessage{}, err
+		return types.TransferMessage{}, xerrors.Errorf("%v: %v", err, string(stderr.Bytes()))
 	}
 
 	msg := types.TransferMessage{
