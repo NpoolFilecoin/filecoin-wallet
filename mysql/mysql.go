@@ -262,7 +262,7 @@ func (cli *MysqlCli) QueryFilecoinAccounts() ([]types.FilecoinAccount, error) {
 type FilecoinTransferTarget struct {
 	Id      uuid.UUID `gorm:"column:id"`
 	Address string    `gorm:"column:address"`
-	Targets []string  `gorm:"column:targets"`
+	Targets string    `gorm:"column:targets"`
 }
 
 func (cli *MysqlCli) SetFilecoinTransferTarget(target FilecoinTransferTarget) error {
@@ -278,4 +278,16 @@ func (cli *MysqlCli) SetFilecoinTransferTarget(target FilecoinTransferTarget) er
 
 	rc := cli.db.Save(&target)
 	return rc.Error
+}
+
+func (cli *MysqlCli) QueryFilecoinTransferTarget(address string) (*FilecoinTransferTarget, error) {
+	target := FilecoinTransferTarget{}
+	count := 0
+
+	cli.db.Where("address = ?", address).Find(&target).Count(&count)
+	if count == 0 {
+		return nil, xerrors.Errorf("no address targets '%v' available", address)
+	}
+
+	return &target, nil
 }

@@ -183,3 +183,14 @@ type SetBalanceTransferTargetsInput struct {
 	Address  string    `json:"address"`
 	Targets  []string  `json:"targets"`
 }
+
+type GetBalanceTransferTargetsInput struct {
+	AuthCode uuid.UUID `json:"auth_code"`
+	Address  string    `json:"address"`
+}
+
+type GetBalanceTransferTargetsOutput struct {
+	Id      uuid.UUID `json:"id"`
+	Address string    `json:"address"`
+	Targets []string  `json:"targets"`
+}

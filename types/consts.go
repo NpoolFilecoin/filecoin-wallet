@@ -25,4 +25,5 @@ const (
 	AddCustomerAPI               = "/api/v0/add/customer"
 	ListCustomersAPI             = "/api/v0/list/customers"
 	SetBalanceTransferTargetsAPI = "/api/v0/set/balance/transfer/targets"
+	GetBalanceTransferTargetsAPI = "/api/v0/get/balance/transfer/targets"
 )
