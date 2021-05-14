@@ -60,6 +60,18 @@ func (cli *MysqlCli) AddBalanceTransferRequest(request types.BalanceTransferRequ
 	return rc.Error
 }
 
+func (cli *MysqlCli) QueryBalanceTransferRequest(id uuid.UUID) (types.BalanceTransferRequest, error) {
+	request := types.BalanceTransferRequest{}
+	count := 0
+
+	rc := cli.db.Where("id = ?", id).Find(&request).Count(&count)
+	if count == 0 {
+		return request, xerrors.Errorf("cannot find request")
+	}
+
+	return request, rc.Error
+}
+
 func (cli *MysqlCli) QueryBalanceTransferRequests() ([]types.BalanceTransferRequest, error) {
 	requests := []types.BalanceTransferRequest{}
 	count := 0

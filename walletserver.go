@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	log "github.com/EntropyPool/entropy-logger"
 	"github.com/NpoolFilecoin/filecoin-wallet/api"
 	mysqlcli "github.com/NpoolFilecoin/filecoin-wallet/mysql"
@@ -83,6 +84,16 @@ func (s *WalletServer) Run() error {
 	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
 		Location: types.RequestBalanceTransferAPI,
 		Handler:  s.CreateBalanceTransferRequest,
+		Method:   "POST",
+	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.ConfirmBalanceTransferAPI,
+		Handler:  s.ConfirmBalanceTransferRequest,
+		Method:   "POST",
+	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.RejectBalanceTransferAPI,
+		Handler:  s.RejectBalanceTransferRequest,
 		Method:   "POST",
 	})
 	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
@@ -285,6 +296,56 @@ func (s *WalletServer) CreateBalanceTransferRequest(w http.ResponseWriter, req *
 	return types.RequestBalanceTransferOutput{
 		Id: id,
 	}, "", 0
+}
+
+func (s *WalletServer) ConfirmBalanceTransferRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.ConfirmBalanceTransferInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	user, err := s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	if user.Role != "reviewer" {
+		return nil, "only role 'reviewer' can confirm transfer balance", -4
+	}
+
+	request, err := s.mysqlCli.QueryBalanceTransferRequest(input.Id)
+	if err != nil {
+		return nil, err.Error(), -5
+	}
+
+	if request.Reviewer != user.Username {
+		return nil, "not right reviewer", -6
+	}
+
+	msg, err := s.walletAPI.TransferBalance(request.From, request.To, fmt.Sprintf("%v", request.Amount))
+	if err != nil {
+		return nil, err.Error(), -7
+	}
+
+	s.mysqlCli.ConfirmBalanceTransferRequest(request)
+
+	// TODO: Query account info then fill to msg
+	msg.Creator = request.Creator
+	msg.Reviewer = request.Reviewer
+
+	return types.ConfirmBalanceTransferOutput{
+		Message: msg,
+	}, "", 0
+}
+
+func (s *WalletServer) RejectBalanceTransferRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	return nil, "", 0
 }
 
 func (s *WalletServer) CreateBalanceWithdrawRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
