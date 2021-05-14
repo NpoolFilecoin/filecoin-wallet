@@ -100,6 +100,7 @@ type ListBanalceRequestOutput struct {
 type AddAccountInput struct {
 	AuthCode        uuid.UUID `json:"auth_code"`
 	PrivateKey      string    `json:"private_key"`
+	Address         string    `json:"address"`
 	WalletType      string    `json:"wallet_type"`
 	CustomerName    string    `json:"customer_name"`
 	MinerID         string    `json:"miner_id"`

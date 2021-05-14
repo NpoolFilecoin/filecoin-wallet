@@ -218,12 +218,12 @@ func (cli *MysqlCli) QueryFilecoinMiners() ([]types.FilecoinMiner, error) {
 }
 
 func (cli *MysqlCli) AddFilecoinAccount(account types.FilecoinAccount) (uuid.UUID, error) {
-	acc := types.FilecoinAccount{}
+	accs := []types.FilecoinAccount{}
 	count := 0
 
-	cli.db.Where("address = ?", account.Address).Find(&acc).Count(&count)
+	cli.db.Where("address = ?", account.Address).Find(&accs).Count(&count)
 	if 0 < count {
-		return account.Id, nil
+		return accs[0].Id, nil
 	}
 
 	account.Id = uuid.New()

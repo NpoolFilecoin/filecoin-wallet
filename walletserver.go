@@ -502,19 +502,27 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 		return nil, err.Error(), -8
 	}
 
-	bearerToken, err := ioutil.ReadFile("/opt/chain/lotus/token")
-	if err != nil {
-		log.Errorf(log.Fields{}, "cannot read token file")
-		bearerToken = []byte("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.EhlHl0JkXpI-1JYuyPHECkif7TyZEMRnADoBgbd2PBw")
+	if input.Address == "" {
+		return nil, "address should be specified", -9
 	}
 
-	addr, err := s.walletAPI.ImportWallet(input.PrivateKey, string(bearerToken))
-	if err != nil {
-		return nil, err.Error(), -9
-	}
+	addr := input.Address
+	exists, _ := s.walletAPI.WalletExists(input.Address)
+	if !exists {
+		addr, err = s.walletAPI.ImportWallet(input.PrivateKey)
+		if err != nil {
+			return nil, err.Error(), -9
+		}
 
-	if addr == "null" {
-		return nil, "key is already imported", -6
+		if addr == "null" {
+			return nil, "key is already imported", -10
+		}
+		if addr != input.Address {
+			return nil, "input address is not what you imported", -11
+		}
+	} else {
+		log.Infof(log.Fields{}, "address '%v' exists, just update database", input.Address)
+		addr = input.Address
 	}
 
 	addr = strings.Replace(addr, "\"", "", -1)

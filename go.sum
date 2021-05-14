@@ -49,6 +49,14 @@ github.com/NpoolDevOps/fbc-devops-peer v0.0.0-20210514042705-0a48c17c50d3 h1:PdD
 github.com/NpoolDevOps/fbc-devops-peer v0.0.0-20210514042705-0a48c17c50d3/go.mod h1:0X1+IGISEchQs/7QDHA8HSuRKW2T55VrEzFMPnwNCM4=
 github.com/NpoolDevOps/fbc-devops-peer v0.0.0-20210514045743-a645e8289060 h1:vmnb0Hv9rbWqJ5jHkTofjiNAUVMLgzZzChx5C1fz8XY=
 github.com/NpoolDevOps/fbc-devops-peer v0.0.0-20210514045743-a645e8289060/go.mod h1:0X1+IGISEchQs/7QDHA8HSuRKW2T55VrEzFMPnwNCM4=
+github.com/NpoolDevOps/fbc-devops-peer v0.0.0-20210514114304-2bc9096195bb h1:IOk/ssfnUAYFte32g8myEaZ0wavUr+utBz8RGfmNLMs=
+github.com/NpoolDevOps/fbc-devops-peer v0.0.0-20210514114304-2bc9096195bb/go.mod h1:0X1+IGISEchQs/7QDHA8HSuRKW2T55VrEzFMPnwNCM4=
+github.com/NpoolDevOps/fbc-devops-peer v0.0.0-20210514115349-3c8a4eed5986 h1:nixsthkDmhrytewpcI83AH3t5ZVPkuSXh611jJU4VKw=
+github.com/NpoolDevOps/fbc-devops-peer v0.0.0-20210514115349-3c8a4eed5986/go.mod h1:0X1+IGISEchQs/7QDHA8HSuRKW2T55VrEzFMPnwNCM4=
+github.com/NpoolDevOps/fbc-devops-peer v0.0.0-20210514120516-c6b42d59dcf7 h1:UlsKq1ZRgPcF0ZX6c1EmexvXrbnxzORVn2/HfAqrzaQ=
+github.com/NpoolDevOps/fbc-devops-peer v0.0.0-20210514120516-c6b42d59dcf7/go.mod h1:0X1+IGISEchQs/7QDHA8HSuRKW2T55VrEzFMPnwNCM4=
+github.com/NpoolDevOps/fbc-devops-peer v0.0.0-20210514121319-3c818d2c7ca0 h1:1EVNDd1rRe+c6PerHeNqRjHzmiQcYleHB/KflLraf9g=
+github.com/NpoolDevOps/fbc-devops-peer v0.0.0-20210514121319-3c818d2c7ca0/go.mod h1:0X1+IGISEchQs/7QDHA8HSuRKW2T55VrEzFMPnwNCM4=
 github.com/NpoolDevOps/fbc-devops-service v0.0.0-20210318090754-3e9f35202388/go.mod h1:cpRsY+DZ6TDTZrGCldMNcKP5u8AnIl4rbpykflkQUC8=
 github.com/NpoolDevOps/fbc-devops-service v0.0.0-20210413053955-6d57518351f4/go.mod h1:hnM8dBbmR7Am0PcqdNAUVthIsv/HRnxDoiCQlUgxjr8=
 github.com/NpoolDevOps/fbc-license v0.0.0-20210408084724-dec53ab9682d/go.mod h1:BFwffHaR4s4KOTmu/SB6suCVeq2Nmduy/JHRW7YdifA=
