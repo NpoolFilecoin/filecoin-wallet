@@ -165,6 +165,18 @@ func (cli *MysqlCli) QueryFilecoinCustomerId(customerName string) (uuid.UUID, er
 	return uuid.New(), xerrors.Errorf("cannot find customer '%v'", customerName)
 }
 
+func (cli *MysqlCli) QueryFilecoinCustomerName(id uuid.UUID) (string, error) {
+	customer := types.FilecoinCustomer{}
+	count := 0
+
+	cli.db.Where("id = ?", id).Find(&customer).Count(&count)
+	if 0 < count {
+		return customer.CustomerName, nil
+	}
+
+	return "", xerrors.Errorf("cannot find customer '%v'", id)
+}
+
 func (cli *MysqlCli) QueryFilecoinCustomers() ([]types.FilecoinCustomer, error) {
 	customers := []types.FilecoinCustomer{}
 	count := 0

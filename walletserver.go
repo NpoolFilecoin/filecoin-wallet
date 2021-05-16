@@ -176,6 +176,11 @@ func (s *WalletServer) Run() error {
 		Handler:  s.TransferBalanceRequest,
 		Method:   "POST",
 	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.AccountInfoAPI,
+		Handler:  s.AccountInfoRequest,
+		Method:   "POST",
+	})
 
 	httpdaemon.Run(s.config.Port)
 	return nil
@@ -948,4 +953,43 @@ func (s *WalletServer) TransferBalanceRequest(w http.ResponseWriter, req *http.R
 	}
 
 	return msg, "", 0
+}
+
+func (s *WalletServer) AccountInfoRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.AccountInfoInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	_, err = s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	account, err := s.mysqlCli.QueryFilecoinAccount(input.Address)
+	if err != nil {
+		return nil, err.Error(), -4
+	}
+
+	customerName, err := s.mysqlCli.QueryFilecoinCustomerName(account.CustomerID)
+	if err != nil {
+		return nil, err.Error(), -5
+	}
+
+	balance, err := s.walletAPI.WalletBalance(input.Address)
+	if err != nil {
+		return nil, err.Error(), -6
+	}
+
+	return types.AccountInfoOutput{
+		Account:      account,
+		CustomerName: customerName,
+		Balance:      balance,
+	}, "", 0
 }

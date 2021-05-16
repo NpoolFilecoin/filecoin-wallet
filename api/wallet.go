@@ -82,6 +82,23 @@ func (msg *nativeMessage) ToString() string {
 	return string(b)
 }
 
+func (api *WalletAPI) WalletBalance(address string) (string, error) {
+	cmd := exec.Command("/usr/local/bin/lotus", "--repo", "/opt/chain/lotus", "wallet", "balance", address)
+
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	err := cmd.Run()
+	if err != nil {
+		log.Errorf(log.Fields{}, "fail to run lotus wallet balance: %v | %v", err, string(stderr.Bytes()))
+		return "", xerrors.Errorf("%v: %v", err, string(stderr.Bytes()))
+	}
+
+	strs := strings.Split(strings.TrimSpace(string(stdout.Bytes())), " ")
+	return strs[0], nil
+}
+
 func (api *WalletAPI) TransferBalance(from, to string, amount string) (types.TransferMessage, error) {
 	cmd := exec.Command("/usr/local/bin/lotus", "--repo", "/opt/chain/lotus", "send", "--from", from, to, amount)
 

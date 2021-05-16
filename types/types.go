@@ -228,3 +228,14 @@ type ConfirmBalanceTransferOutput struct {
 }
 
 type RejectBalanceTransferInput = ConfirmBalanceTransferInput
+
+type AccountInfoInput struct {
+	AuthCode uuid.UUID `json:"auth_code"`
+	Address  string    `json:"address"`
+}
+
+type AccountInfoOutput struct {
+	Account      FilecoinAccount `json:"account"`
+	CustomerName string          `json:"customer_name"`
+	Balance      string          `json:"balance"`
+}
