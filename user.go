@@ -43,18 +43,9 @@ func NewWalletAuthorizationProxy(userCfg string) *WalletAuthorizationProxy {
 	return proxy
 }
 
-func (p *WalletAuthorizationProxy) AddUser(authCode uuid.UUID, newUser types.WalletUser) error {
+func (p *WalletAuthorizationProxy) AddUser(newUser types.WalletUser) error {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()
-
-	loginedUser, ok := p.authCode[authCode]
-	if !ok {
-		return xerrors.Errorf("login firstly to create new user")
-	}
-
-	if loginedUser.Role != "admin" {
-		return xerrors.Errorf("username %v's role %v cannot create new user", loginedUser.Username, loginedUser.Role)
-	}
 
 	validRole := false
 	for _, role := range p.users.Roles {

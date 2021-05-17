@@ -235,9 +235,18 @@ func (s *WalletServer) AddUserRequest(w http.ResponseWriter, req *http.Request) 
 		return nil, "invalid username or password", -3
 	}
 
-	err = s.authProxy.AddUser(input.AuthCode, input.User)
+	user, err := s.authProxy.UserByAuthCode(input.AuthCode)
 	if err != nil {
 		return nil, err.Error(), -4
+	}
+
+	if user.Role != "admin" {
+		return nil, "only admin can add user", -5
+	}
+
+	err = s.authProxy.AddUser(input.User)
+	if err != nil {
+		return nil, err.Error(), -6
 	}
 
 	return nil, "", 0
