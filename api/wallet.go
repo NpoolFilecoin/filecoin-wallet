@@ -191,19 +191,19 @@ func (api *WalletAPI) WithdrawBalance(miner, owner string, amount string) (types
 	if err != nil {
 		return types.WithdrawMessage{}, xerrors.Errorf("无法获得Miner %v 的余额", miner)
 	}
-	availableF, _ := strconv.ParseFloat(available, 64)
-	afint := int64(availableF*1000)
-	big3 := big.NewInt(afint)
-	am, _ := strconv.ParseFloat(amount, 64)
-	amint := int64(am*1000)
-	big1 := big.NewInt(amint)
-	big2 := big.NewInt(1000000000000000)
-	big1.Mul(big1, big2)
-	big3.Mul(big3, big2)
-	if big1.Cmp(big3) == 1 {
+	availableFloat, _ := strconv.ParseFloat(available, 64)
+	availableFloatToInt := int64(availableFloat*1000)
+	availableBigInt := big.NewInt(availableFloatToInt)
+	amountFloat, _ := strconv.ParseFloat(amount, 64)
+	amountFloatToInt := int64(amountFloat*1000)
+	amountBigInt := big.NewInt(amountFloatToInt)
+	bigNum := big.NewInt(1000000000000000)
+	amountBigInt.Mul(amountBigInt, bigNum)
+	availableBigInt.Mul(availableBigInt, bigNum)
+	if amountBigInt.Cmp(availableBigInt) == 1 {
 		return types.WithdrawMessage{}, xerrors.Errorf("提现余额大于可用余额！！！\n 可用余额为：%v", available)
 	}
-	amount = big1.String()
+	amount = amountBigInt.String()
 	// as := fmt.Sprintf("'{%cAmountRequested%c: %c%v%c}'", '"', '"', '"', amount, '"')
 	// as = strings.Replace(as, "\\", "", -1)
 	// as := "'{\"AmountRequested\": \""+amount+"\"}'"

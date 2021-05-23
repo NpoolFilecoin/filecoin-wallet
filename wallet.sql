@@ -104,7 +104,7 @@ CREATE TABLE if not exists `filecoin_transfer_history` (
 ) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table for transfer_message
+-- Table for review_history
 -- ----------------------------
 CREATE TABLE if not exists `review_history` (
   `request_id` varchar(64) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
