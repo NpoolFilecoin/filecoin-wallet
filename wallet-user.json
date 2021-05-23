@@ -1,1 +1,1 @@
-{"roles":["admin","reviewer","accounter","visitor"],"users":[{"username":"admin","password":"uoq2werkjkljl","role":"admin"},{"username":"admin1","password":"uoq2werkjkljl","role":"accounter"},{"username":"admin2","password":"uoq2werkjkljl","role":"reviewer"}]}
+{"roles":["admin","reviewer","accounter","visitor"],"users":[{"username":"admin","password":"uoq2werkjkljl","role":"admin"},{"username":"admin1","password":"uoq2werkjkljl","role":"accounter"},{"username":"admin2","password":"uoq2werkjkljl","role":"reviewer"},{"username":"user1","password":"123456","role":"accounter"}]}

@@ -28,6 +28,7 @@ CREATE TABLE if not exists `balance_transfer_request` (
   `to` varchar(512) NULL DEFAULT 0 COMMENT '',
   `amount` double(6, 2) NULL DEFAULT 0 COMMENT '',
   `status` varchar(32) NULL DEFAULT 0 COMMENT '',
+  `time` datetime NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
@@ -42,6 +43,7 @@ CREATE TABLE if not exists `balance_withdraw_request` (
   `miner` varchar(512) NULL DEFAULT 0 COMMENT '',
   `amount` double(6, 2) NULL DEFAULT 0 COMMENT '',
   `status` varchar(32) NULL DEFAULT 0 COMMENT '',
+  `time` datetime NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
@@ -101,4 +103,25 @@ CREATE TABLE if not exists `filecoin_transfer_history` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
+-- ----------------------------
+-- Table for transfer_message
+-- ----------------------------
+CREATE TABLE if not exists `review_history` (
+  `request_id` varchar(64) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `from` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `from_owner` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `creator` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `to` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `to_owner` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `amount` double(6, 2) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `cid` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `gas_limit` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `gas_feecap` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `gas_premium` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `reviewer` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `status` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `time` datetime NOT NULL,
+  `type` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  PRIMARY KEY (`cid`) USING BTREE
+)ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 SET FOREIGN_KEY_CHECKS = 1;

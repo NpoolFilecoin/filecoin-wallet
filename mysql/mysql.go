@@ -57,11 +57,24 @@ const (
 func (cli *MysqlCli) AddBalanceTransferRequest(request types.BalanceTransferRequest) error {
 	request.Status = RequestCreated
 	rc := cli.db.Save(&request)
+	log.Infof(log.Fields{}, "add balance transfer request %v", request) //
 	return rc.Error
 }
 
 func (cli *MysqlCli) QueryBalanceTransferRequest(id uuid.UUID) (types.BalanceTransferRequest, error) {
 	request := types.BalanceTransferRequest{}
+	count := 0
+
+	rc := cli.db.Where("id = ?", id).Find(&request).Count(&count)
+	if count == 0 {
+		return request, xerrors.Errorf("cannot find request")
+	}
+
+	return request, rc.Error
+}
+
+func (cli *MysqlCli) QueryBalanceWithdrawRequest(id uuid.UUID) (types.BalanceWithdrawRequest, error) {
+	request := types.BalanceWithdrawRequest{}
 	count := 0
 
 	rc := cli.db.Where("id = ?", id).Find(&request).Count(&count)
@@ -84,9 +97,39 @@ func (cli *MysqlCli) QueryBalanceTransferRequests() ([]types.BalanceTransferRequ
 	return requests, rc.Error
 }
 
+//
+func (cli *MysqlCli) QueryReviewHistory() ([]types.ReviewHistory, error) {
+	requests := []types.ReviewHistory{}
+	count := 0
+	rc := cli.db.Find(&requests).Count(&count)
+	if count == 0 {
+		return nil, xerrors.Errorf("cannot find any requests")
+	}
+
+	return requests, rc.Error
+}
+
+func (cli *MysqlCli) QueryReviewHistoryCid(cid string) error {
+	history := types.ReviewHistory{}
+	count := 0
+
+	cli.db.Where("cid = ?", cid).Find(&history).Count(&count)
+	if 0 >= count {
+		return xerrors.Errorf("cannot find cid")
+	}
+	return nil
+}
+
 func (cli *MysqlCli) ConfirmBalanceTransferRequest(request types.BalanceTransferRequest) error {
 	request.Status = RequestAccepted
 	rc := cli.db.Save(&request)
+	log.Infof(log.Fields{}, "confirm transfer request %v", request)
+	return rc.Error
+}
+//
+func (cli *MysqlCli) AddReviewHistory(request types.ReviewHistory) error {
+	rc := cli.db.Save(&request)
+	log.Infof(log.Fields{}, "review history sends to sql %v", request)
 	return rc.Error
 }
 
@@ -175,6 +218,16 @@ func (cli *MysqlCli) QueryFilecoinCustomerName(id uuid.UUID) (string, error) {
 	}
 
 	return "", xerrors.Errorf("cannot find customer '%v'", id)
+}
+
+func (cli *MysqlCli) UpdateHistoryCid(cid, newCid string) error {
+	request := types.ReviewHistory{}
+
+	rc := cli.db.Model(&request).Where("cid = ?", cid).UpdateColumn(map[string]interface{}{
+		"cid": newCid,
+		}).Error
+	
+	return rc
 }
 
 func (cli *MysqlCli) QueryFilecoinCustomers() ([]types.FilecoinCustomer, error) {

@@ -67,6 +67,7 @@ func (p *WalletAuthorizationProxy) AddUser(newUser types.WalletUser) error {
 
 	p.users.Users = append(p.users.Users, newUser)
 	b, _ := json.Marshal(p.users)
+	log.Infof(log.Fields{}, "p.users is: $v, p.users.Users is: %v, b is: %v, p.config is: %v", p.users, p.users.Users, b, p.config)
 
 	return ioutil.WriteFile(p.config, b, 0666)
 }
