@@ -175,6 +175,7 @@ type FilecoinAccount struct {
 	CustomerID      uuid.UUID `gorm:"column:customer_id" json:"customer_id"`
 	MinerID         string    `gorm:"column:miner_id" json:"miner_id"`
 	MinerWalletType string    `gorm:"column:miner_wallet_type" json:"miner_wallet_type"`
+	HavePrivateKey  bool			`gorm:"column:have_private_key" json:"have_private_key"`
 }
 
 type ListAccountsInput = ListReviewersInput

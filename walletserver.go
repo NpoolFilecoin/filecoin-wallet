@@ -889,20 +889,26 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 	}
 
 	addr := input.Address
+	havePrivateKey := true
 	exists, _ := s.walletAPI.WalletExists(input.Address)
 	if !exists {
-		addr, err = s.walletAPI.ImportWallet(input.PrivateKey)
-		if err != nil {
-			return nil, err.Error(), -9
-		}
+		if input.PrivateKey == "" {
+			addr = input.Address
+			havePrivateKey = false
+		}else {
+			addr, err = s.walletAPI.ImportWallet(input.PrivateKey)
+			if err != nil {
+				return nil, err.Error(), -9
+			}
 
-		if addr == "null" {
-			return nil, "key is already imported", -10
-		}
+			if addr == "null" {
+				return nil, "key is already imported", -10
+			}
 
-		addr = strings.Replace(addr, "\"", "", -1)
-		if addr != input.Address {
-			return nil, "input address is not what you imported", -11
+			addr = strings.Replace(addr, "\"", "", -1)
+			if addr != input.Address {
+				return nil, "input address is not what you imported", -11
+			}
 		}
 	} else {
 		log.Infof(log.Fields{}, "address '%v' exists, just update database", input.Address)
@@ -915,6 +921,7 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 		CustomerID:      customerId,
 		MinerID:         input.MinerID,
 		MinerWalletType: input.MinerWalletType,
+		HavePrivateKey:  havePrivateKey,
 	})
 
 	return types.AddAccountOutput{

@@ -76,6 +76,7 @@ CREATE TABLE if not exists `filecoin_account` (
   `customer_id` varchar(64) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `miner_id` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL COMMENT '',
   `miner_wallet_type` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL COMMENT '',
+  `have_private_key` boolean,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
