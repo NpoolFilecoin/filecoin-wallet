@@ -861,22 +861,24 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 		return nil, "invalid wallet type", -5
 	}
 
-	validType = false
-	minerWalletTypes := s.walletAPI.MinerWalletTypes()
-	for _, walletType := range minerWalletTypes {
-		if input.MinerWalletType == walletType {
-			validType = true
-			break
+	if input.WalletType == "miner" {
+		validType = false
+		minerWalletTypes := s.walletAPI.MinerWalletTypes()
+		for _, walletType := range minerWalletTypes {
+			if input.MinerWalletType == walletType {
+				validType = true
+				break
+			}
 		}
-	}
 
-	if !validType {
-		return nil, "invalid miner wallet type", -6
-	}
+		if !validType {
+			return nil, "invalid miner wallet type", -6
+		}
 
-	_, err = s.mysqlCli.QueryFilecoinMiner(input.MinerID)
-	if err != nil {
-		return nil, err.Error(), -7
+		_, err = s.mysqlCli.QueryFilecoinMiner(input.MinerID)
+		if err != nil {
+			return nil, err.Error(), -7
+		}
 	}
 
 	customerId, err := s.mysqlCli.QueryFilecoinCustomerId(input.CustomerName)

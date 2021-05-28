@@ -234,12 +234,12 @@ func (cli *MysqlCli) QueryFilecoinCustomers() ([]types.FilecoinCustomer, error) 
 	customers := []types.FilecoinCustomer{}
 	count := 0
 
-	rc := cli.db.Find(&customers).Count(&count)
+	_ = cli.db.Find(&customers).Count(&count)
 	if count == 0 {
 		return nil, xerrors.Errorf("cannot find any customer")
 	}
 
-	return customers, rc.Error
+	return customers, nil
 }
 
 func (cli *MysqlCli) AddFilecoinMiner(minerId string, customerId uuid.UUID) (uuid.UUID, error) {

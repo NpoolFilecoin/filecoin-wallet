@@ -31,7 +31,7 @@ type WalletAPI struct {
 func NewWalletAPI(config WalletAPIConfig) *WalletAPI {
 	api := &WalletAPI{
 		config:           config,
-		walletTypes:      []string{"accounting", "miner"},
+		walletTypes:      []string{"accounting", "miner", "neither"},
 		minerWalletTypes: []string{"owner", "worker", "post"},
 	}
 
