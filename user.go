@@ -139,3 +139,10 @@ func (p *WalletAuthorizationProxy) ListReviewers() ([]string, error) {
 func (p *WalletAuthorizationProxy) ListRoles() ([]string, error) {
 	return p.users.Roles, nil
 }
+
+func (p *WalletAuthorizationProxy) ListUsers() ([]types.WalletUser, error) {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+
+	return p.users.Users, nil
+}

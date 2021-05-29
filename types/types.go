@@ -337,3 +337,11 @@ type QueryHandlingStatusInput struct {
 	AuthCode		 uuid.UUID `json:"auth_code"`
 	Cid					 string `json:"cid"`
 }
+
+type ListUsersInput struct {
+	AuthCode		uuid.UUID `json:"auth_code"`
+}
+
+type ListUsersOutput struct {
+	Users			[]WalletUser `json:"users"`
+}

@@ -32,4 +32,5 @@ const (
 	WithdrawBalanceAPI					 = "/api/v0/withdraw/balance"
 	HandlingFeeAPI							 = "/api/v0/handling/fee"
 	QueryHandlingStatusAPI 			 = "/api/v0/query/handling/status"
+	ListUsersAPI								 = "/api/v0/list/users"
 )

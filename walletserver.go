@@ -218,6 +218,11 @@ func (s *WalletServer) Run() error {
 		Handler:  s.QueryHandlingStatusRequest,
 		Method:   "POST",
 	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.ListUsersAPI,
+		Handler:  s.ListUsersRequest,
+		Method:   "POST",
+	})
 
 	
 
@@ -1433,3 +1438,30 @@ func (s *WalletServer) QueryHandlingStatusRequest(w http.ResponseWriter, req *ht
 	return nil, "消息还在堵塞，请继续加手续费", -4
 }
 
+func (s *WalletServer) ListUsersRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.ListUsersInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	user, err := s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	if user.Role != "admin" {
+		return nil, "Only Admin can See user lists!!!", -4
+	}
+
+	userLists, err := s.authProxy.ListUsers()
+	
+	return types.ListUsersOutput{
+		Users: userLists,
+	}, "", 0
+}
