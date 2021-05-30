@@ -80,8 +80,10 @@ func (p *WalletAuthorizationProxy) ChangeUser(userBefore types.WalletUser, userA
 		if userBefore.Username ==  v.Username{
 			changePosition = k
 		}
-		if userAfter.Username == v.Username {
-			return xerrors.Errorf("username %v already exists", userAfter.Username)
+		if userAfter.Username !== userBefore.Username {
+			if userAfter.Username == v.Username {
+				return xerrors.Errorf("username %v already exists", userAfter.Username)
+			}
 		}
 	}
 	p.users.Users[changePosition].Username = userAfter.Username
