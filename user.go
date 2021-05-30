@@ -104,9 +104,7 @@ func (p *WalletAuthorizationProxy) DeleteUser(user types.WalletUser) error {
 			break
 		}
 	}
-	for _, duser := range p.users.Users[(deletePosition+1) :] {
-		p.users.Users = append(p.users.Users[:deletePosition], duser)
-	}
+		p.users.Users = append(p.users.Users[:deletePosition], p.users.Users[deletePosition + 1:]...)
 	b, _ := json.Marshal(p.users)
 	log.Infof(log.Fields{}, "after deleting, p.users is: $v, p.users.Users is: %v, b is: %v, p.config is: %v", p.users, p.users.Users, b, p.config)
 	return ioutil.WriteFile(p.config, b, 0666)
