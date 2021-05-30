@@ -72,6 +72,44 @@ func (p *WalletAuthorizationProxy) AddUser(newUser types.WalletUser) error {
 	return ioutil.WriteFile(p.config, b, 0666)
 }
 
+func (p *WalletAuthorizationProxy) ChangeUser(userBefore types.WalletUser, userAfter types.WalletUser) error {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+	var changePosition int
+	for k, v := range p.users.Users {
+		if userBefore.Username ==  v.Username{
+			changePosition = k
+		}
+		if userAfter.Username == v.Username {
+			return xerrors.Errorf("username %v already exists", userAfter.Username)
+		}
+	}
+	p.users.Users[changePosition].Username = userAfter.Username
+	p.users.Users[changePosition].Password = userAfter.Password
+	p.users.Users[changePosition].Role = userAfter.Role
+	b, _ := json.Marshal(p.users)
+	log.Infof(log.Fields{}, "after changing, p.users is: $v, p.users.Users is: %v, b is: %v, p.config is: %v", p.users, p.users.Users, b, p.config)
+	return ioutil.WriteFile(p.config, b, 0666)
+}
+
+func (p *WalletAuthorizationProxy) DeleteUser(user types.WalletUser) error {
+	p.mutex.Lock()
+	defer p.mutex.Unlock()
+	var deletePosition int
+	for k, v := range p.users.Users {
+		if user.Username ==  v.Username{
+			deletePosition = k
+			break
+		}
+	}
+	for _, duser := range p.users.Users[(deletePosition+1) :] {
+		p.users.Users = append(p.users.Users[:deletePosition], duser)
+	}
+	b, _ := json.Marshal(p.users)
+	log.Infof(log.Fields{}, "after deleting, p.users is: $v, p.users.Users is: %v, b is: %v, p.config is: %v", p.users, p.users.Users, b, p.config)
+	return ioutil.WriteFile(p.config, b, 0666)
+}
+
 func (p *WalletAuthorizationProxy) Login(username string, password string) (uuid.UUID, error) {
 	p.mutex.Lock()
 	defer p.mutex.Unlock()

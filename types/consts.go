@@ -33,4 +33,6 @@ const (
 	HandlingFeeAPI							 = "/api/v0/handling/fee"
 	QueryHandlingStatusAPI 			 = "/api/v0/query/handling/status"
 	ListUsersAPI								 = "/api/v0/list/users"
+	DeleteUserAPI								 = "/api/v0/delete/user"
+	ChangeUserAPI								 = "/api/v0/change/user"
 )

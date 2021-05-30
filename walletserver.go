@@ -223,8 +223,16 @@ func (s *WalletServer) Run() error {
 		Handler:  s.ListUsersRequest,
 		Method:   "POST",
 	})
-
-	
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.DeleteUserAPI,
+		Handler:  s.DeleteUserRequest,
+		Method:   "POST",
+	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.ChangeUserAPI,
+		Handler:  s.ChangeUserRequest,
+		Method:   "POST",
+	})
 
 	httpdaemon.Run(s.config.Port)
 	return nil
@@ -1464,4 +1472,70 @@ func (s *WalletServer) ListUsersRequest(w http.ResponseWriter, req *http.Request
 	return types.ListUsersOutput{
 		Users: userLists,
 	}, "", 0
+}
+
+func (s *WalletServer) DeleteUserRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.UserDeleteInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	if input.User.Username == "" || input.User.Password == "" {
+		return nil, "invalid username or password", -3
+	}
+
+	user, err := s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -4
+	}
+
+	if user.Role != "admin" {
+		return nil, "only admin can add user", -5
+	}
+
+	err = s.authProxy.DeleteUser(input.User)
+	if err != nil {
+		return nil, err.Error(), -6
+	}
+
+	return nil, "", 0
+}
+
+func (s *WalletServer) ChangeUserRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.UserChangeInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	if input.UserAfter.Username == "" || input.UserAfter.Password == "" {
+		return nil, "invalid username or password", -3
+	}
+
+	user, err := s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -4
+	}
+
+	if user.Role != "admin" {
+		return nil, "only admin can add user", -5
+	}
+
+	err = s.authProxy.ChangeUser(input.UserBefore, input.UserAfter)
+	if err != nil {
+		return nil, err.Error(), -6
+	}
+
+	return nil, "", 0
 }

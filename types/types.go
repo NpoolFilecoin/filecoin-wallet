@@ -345,3 +345,14 @@ type ListUsersInput struct {
 type ListUsersOutput struct {
 	Users			[]WalletUser `json:"users"`
 }
+
+type UserDeleteInput struct {
+	User			WalletUser `json:"user"`
+	AuthCode	uuid.UUID `json:"auth_code"`
+}
+
+type UserChangeInput struct {
+	UserBefore	WalletUser `json:"user_before"`
+	UserAfter		WalletUser `json:"user_after"`
+	AuthCode		uuid.UUID `json:"auth_code"`
+}
