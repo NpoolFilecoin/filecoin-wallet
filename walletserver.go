@@ -469,40 +469,29 @@ func (s *WalletServer) RejectBalanceTransferRequest(w http.ResponseWriter, req *
 		return nil, "not right reviewer", -6
 	}
 
-	msg, err := s.walletAPI.TransferBalance(request.From, request.To, fmt.Sprintf("%v", request.Amount))
-	if err != nil {
-		return nil, err.Error(), -7
-	}
-
 	s.mysqlCli.RejectBalanceTransferRequest(request)
 	rejectTime := time.Unix(time.Now().Unix(), 0)
 
-	msg.From = request.From
-	msg.To = request.To
-	msg.Amount = request.Amount
-	msg.Creator = request.Creator
-	msg.Reviewer = request.Reviewer
-
 	//
 	accountFrom, _ := s.mysqlCli.QueryFilecoinAccount(request.From)
-	msg.FromOwner, _ = s.mysqlCli.QueryFilecoinCustomerName(accountFrom.CustomerID)
+	fromOwner, _ := s.mysqlCli.QueryFilecoinCustomerName(accountFrom.CustomerID)
 
 	accountTo, _ := s.mysqlCli.QueryFilecoinAccount(request.To)
-	msg.ToOwner, _ = s.mysqlCli.QueryFilecoinCustomerName(accountTo.CustomerID)
+	toOwner, _ := s.mysqlCli.QueryFilecoinCustomerName(accountTo.CustomerID)
 	//
 	s.mysqlCli.AddReviewHistory(types.ReviewHistory{
 		RequestId: request.Id,
-		From: msg.From,
-		FromOwner: msg.FromOwner,
-		Creator: msg.Creator,
-		To: msg.To,
-		ToOwner: msg.ToOwner,
-		Amount: msg.Amount,
-		Cid: msg.Cid,
-		GasLimit: msg.GasLimit,
-		GasFeeCap: msg.GasFeeCap,
-		GasPremium: msg.GasPremium,
-		Reviewer: msg.Reviewer,
+		From: request.From,
+		FromOwner: fromOwner,
+		Creator: request.Creator,
+		To: request.To,
+		ToOwner: toOwner,
+		Amount: request.Amount,
+		Cid: "",
+		GasLimit: "",
+		GasFeeCap: "",
+		GasPremium: "",
+		Reviewer: request.Reviewer,
 		Status: "rejected",
 		Time: rejectTime,
 		Type: "Transfer",
@@ -674,37 +663,26 @@ func (s *WalletServer) RejectBalanceWithdrawRequest(w http.ResponseWriter, req *
 		return nil, "not right reviewer", -6
 	}
 
-	msg, err := s.walletAPI.WithdrawBalance(request.Miner, request.Owner, fmt.Sprintf("%v", request.Amount))
-	if err != nil {
-		return nil, err.Error(), -7
-	}
-
 	s.mysqlCli.RejectBalanceWithdrawRequest(request)
 	rejectTime := time.Unix(time.Now().Unix(), 0)
 
 	customerId, _ := s.mysqlCli.QueryFilecoinAccount(request.Owner)
-	msg.FromOwner, _ = s.mysqlCli.QueryFilecoinCustomerName(customerId.CustomerID)
-	msg.ToOwner = msg.FromOwner
+	fromOwner, _ := s.mysqlCli.QueryFilecoinCustomerName(customerId.CustomerID)
 
-	msg.Miner = request.Miner
-	msg.Owner = request.Owner
-	msg.Amount = request.Amount
-	msg.Creator = request.Creator
-	msg.Reviewer = request.Reviewer
 	//
 	s.mysqlCli.AddReviewHistory(types.ReviewHistory{
 		RequestId: request.Id,
-		From: msg.Miner,
-		FromOwner: msg.FromOwner,
-		Creator: msg.Creator,
-		To: msg.Owner,
-		ToOwner: msg.ToOwner,
-		Amount: msg.Amount,
-		Cid: msg.Cid,
-		GasLimit: msg.GasLimit,
-		GasFeeCap: msg.GasFeeCap,
-		GasPremium: msg.GasPremium,
-		Reviewer: msg.Reviewer,
+		From: request.Miner,
+		FromOwner: fromOwner,
+		Creator: request.Creator,
+		To: request.Owner,
+		ToOwner: fromOwner,
+		Amount: request.Amount,
+		Cid: "",
+		GasLimit: "",
+		GasFeeCap: "",
+		GasPremium: "",
+		Reviewer: request.Reviewer,
 		Status: "rejected",
 		Time: rejectTime,
 		Type: "Withdraw",
