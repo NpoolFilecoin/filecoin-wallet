@@ -403,19 +403,19 @@ func (s *WalletServer) ConfirmBalanceTransferRequest(w http.ResponseWriter, req 
 	s.mysqlCli.ConfirmBalanceTransferRequest(request)
 	confirmTime := time.Unix(time.Now().Unix(), 0)
 
-		// TODO: Query account info then fill to msg
-		msg.From = request.From
-		msg.To = request.To
-		msg.Amount = request.Amount
-		msg.Creator = request.Creator
-		msg.Reviewer = request.Reviewer
+	// TODO: Query account info then fill to msg
+	msg.From = request.From
+	msg.To = request.To
+	msg.Amount = request.Amount
+	msg.Creator = request.Creator
+	msg.Reviewer = request.Reviewer
 
-		//
-		accountFrom, _ := s.mysqlCli.QueryFilecoinAccount(request.From)
-		msg.FromOwner, _ = s.mysqlCli.QueryFilecoinCustomerName(accountFrom.CustomerID)
+	//
+	accountFrom, _ := s.mysqlCli.QueryFilecoinAccount(request.From)
+	msg.FromOwner, _ = s.mysqlCli.QueryFilecoinCustomerName(accountFrom.CustomerID)
 
-		accountTo, _ := s.mysqlCli.QueryFilecoinAccount(request.To)
-		msg.ToOwner, _ = s.mysqlCli.QueryFilecoinCustomerName(accountTo.CustomerID)
+	accountTo, _ := s.mysqlCli.QueryFilecoinAccount(request.To)
+	msg.ToOwner, _ = s.mysqlCli.QueryFilecoinCustomerName(accountTo.CustomerID)
 	//
 	s.mysqlCli.AddReviewHistory(types.ReviewHistory{
 		RequestId: request.Id,
