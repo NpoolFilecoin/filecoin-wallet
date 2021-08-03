@@ -3,16 +3,17 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
 	"time"
+
 	log "github.com/EntropyPool/entropy-logger"
 	"github.com/NpoolFilecoin/filecoin-wallet/api"
 	mysqlcli "github.com/NpoolFilecoin/filecoin-wallet/mysql"
 	"github.com/NpoolFilecoin/filecoin-wallet/types"
-	"github.com/NpoolRD/http-daemon"
+	httpdaemon "github.com/NpoolRD/http-daemon"
 	"github.com/google/uuid"
-	"io/ioutil"
-	"net/http"
-	"strings"
 )
 
 type WalletServerConfig struct {
@@ -135,8 +136,8 @@ func (s *WalletServer) Run() error {
 	//zpl
 	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
 		Location: types.ListReviewHistoryAPI,
-		Handler: 	s.ListReviewHistoryRequest,
-		Method: 	"POST",
+		Handler:  s.ListReviewHistoryRequest,
+		Method:   "POST",
 	})
 	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
 		Location: types.AddCustomerAPI,
@@ -231,6 +232,11 @@ func (s *WalletServer) Run() error {
 	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
 		Location: types.ChangeUserAPI,
 		Handler:  s.ChangeUserRequest,
+		Method:   "POST",
+	})
+	httpdaemon.RegisterRouter(httpdaemon.HttpRouter{
+		Location: types.ListQueryReviewHistoryAPI,
+		Handler:  s.ListQueryReviewHistoryRequest,
 		Method:   "POST",
 	})
 
@@ -354,7 +360,7 @@ func (s *WalletServer) CreateBalanceTransferRequest(w http.ResponseWriter, req *
 		From:     input.From,
 		To:       input.To,
 		Amount:   input.Amount,
-		Time: 		createTime,
+		Time:     createTime,
 	})
 	if err != nil {
 		return nil, err.Error(), -10
@@ -418,21 +424,21 @@ func (s *WalletServer) ConfirmBalanceTransferRequest(w http.ResponseWriter, req 
 	msg.ToOwner, _ = s.mysqlCli.QueryFilecoinCustomerName(accountTo.CustomerID)
 	//
 	s.mysqlCli.AddReviewHistory(types.ReviewHistory{
-		RequestId: request.Id,
-		From: msg.From,
-		FromOwner: msg.FromOwner,
-		Creator: msg.Creator,
-		To: msg.To,
-		ToOwner: msg.ToOwner,
-		Amount: msg.Amount,
-		Cid: msg.Cid,
-		GasLimit: msg.GasLimit,
-		GasFeeCap: msg.GasFeeCap,
+		RequestId:  request.Id,
+		From:       msg.From,
+		FromOwner:  msg.FromOwner,
+		Creator:    msg.Creator,
+		To:         msg.To,
+		ToOwner:    msg.ToOwner,
+		Amount:     msg.Amount,
+		Cid:        msg.Cid,
+		GasLimit:   msg.GasLimit,
+		GasFeeCap:  msg.GasFeeCap,
 		GasPremium: msg.GasPremium,
-		Reviewer: msg.Reviewer,
-		Status: "accepted",
-		Time: confirmTime,
-		Type: "Transfer",
+		Reviewer:   msg.Reviewer,
+		Status:     "accepted",
+		Time:       confirmTime,
+		Type:       "Transfer",
 	})
 	return types.ConfirmBalanceTransferOutput{
 		Message: msg,
@@ -480,21 +486,21 @@ func (s *WalletServer) RejectBalanceTransferRequest(w http.ResponseWriter, req *
 	toOwner, _ := s.mysqlCli.QueryFilecoinCustomerName(accountTo.CustomerID)
 	//
 	s.mysqlCli.AddReviewHistory(types.ReviewHistory{
-		RequestId: request.Id,
-		From: request.From,
-		FromOwner: fromOwner,
-		Creator: request.Creator,
-		To: request.To,
-		ToOwner: toOwner,
-		Amount: request.Amount,
-		Cid: "",
-		GasLimit: "",
-		GasFeeCap: "",
+		RequestId:  request.Id,
+		From:       request.From,
+		FromOwner:  fromOwner,
+		Creator:    request.Creator,
+		To:         request.To,
+		ToOwner:    toOwner,
+		Amount:     request.Amount,
+		Cid:        "",
+		GasLimit:   "",
+		GasFeeCap:  "",
 		GasPremium: "",
-		Reviewer: request.Reviewer,
-		Status: "rejected",
-		Time: rejectTime,
-		Type: "Transfer",
+		Reviewer:   request.Reviewer,
+		Status:     "rejected",
+		Time:       rejectTime,
+		Type:       "Transfer",
 	})
 	return nil, "", 0
 }
@@ -550,7 +556,7 @@ func (s *WalletServer) CreateBalanceWithdrawRequest(w http.ResponseWriter, req *
 		Owner:    input.Owner,
 		Miner:    input.Miner,
 		Amount:   input.Amount,
-		Time:			createTime,
+		Time:     createTime,
 	})
 	if err != nil {
 		return nil, err.Error(), -10
@@ -612,21 +618,21 @@ func (s *WalletServer) ConfirmBalanceWithdrawRequest(w http.ResponseWriter, req 
 	msg.Reviewer = request.Reviewer
 
 	s.mysqlCli.AddReviewHistory(types.ReviewHistory{
-		RequestId: request.Id,
-		From: msg.Miner,
-		FromOwner: msg.FromOwner,
-		Creator: msg.Creator,
-		To: msg.Owner,
-		ToOwner: msg.ToOwner,
-		Amount: msg.Amount,
-		Cid: msg.Cid,
-		GasLimit: msg.GasLimit,
-		GasFeeCap: msg.GasFeeCap,
+		RequestId:  request.Id,
+		From:       msg.Miner,
+		FromOwner:  msg.FromOwner,
+		Creator:    msg.Creator,
+		To:         msg.Owner,
+		ToOwner:    msg.ToOwner,
+		Amount:     msg.Amount,
+		Cid:        msg.Cid,
+		GasLimit:   msg.GasLimit,
+		GasFeeCap:  msg.GasFeeCap,
 		GasPremium: msg.GasPremium,
-		Reviewer: msg.Reviewer,
-		Status: "accepted",
-		Time: confirmTime,
-		Type: "Withdraw",
+		Reviewer:   msg.Reviewer,
+		Status:     "accepted",
+		Time:       confirmTime,
+		Type:       "Withdraw",
 	})
 	return types.ConfirmBalanceWithdrawOutput{
 		Message: msg,
@@ -639,7 +645,7 @@ func (s *WalletServer) RejectBalanceWithdrawRequest(w http.ResponseWriter, req *
 		return nil, err.Error(), -1
 	}
 
-	input :=  types.RejectBalanceWithdrawInput{}
+	input := types.RejectBalanceWithdrawInput{}
 	err = json.Unmarshal(b, &input)
 	if err != nil {
 		return nil, err.Error(), -2
@@ -650,7 +656,7 @@ func (s *WalletServer) RejectBalanceWithdrawRequest(w http.ResponseWriter, req *
 		return nil, err.Error(), -3
 	}
 
-	if user.Role != "reviewer"{
+	if user.Role != "reviewer" {
 		return nil, "only role 'reviewer' can reject withdraw balance", -4
 	}
 
@@ -671,21 +677,21 @@ func (s *WalletServer) RejectBalanceWithdrawRequest(w http.ResponseWriter, req *
 
 	//
 	s.mysqlCli.AddReviewHistory(types.ReviewHistory{
-		RequestId: request.Id,
-		From: request.Miner,
-		FromOwner: fromOwner,
-		Creator: request.Creator,
-		To: request.Owner,
-		ToOwner: fromOwner,
-		Amount: request.Amount,
-		Cid: "",
-		GasLimit: "",
-		GasFeeCap: "",
+		RequestId:  request.Id,
+		From:       request.Miner,
+		FromOwner:  fromOwner,
+		Creator:    request.Creator,
+		To:         request.Owner,
+		ToOwner:    fromOwner,
+		Amount:     request.Amount,
+		Cid:        "",
+		GasLimit:   "",
+		GasFeeCap:  "",
 		GasPremium: "",
-		Reviewer: request.Reviewer,
-		Status: "rejected",
-		Time: rejectTime,
-		Type: "Withdraw",
+		Reviewer:   request.Reviewer,
+		Status:     "rejected",
+		Time:       rejectTime,
+		Type:       "Withdraw",
 	})
 	return nil, "", 0
 }
@@ -818,6 +824,32 @@ func (s *WalletServer) ListReviewHistoryRequest(w http.ResponseWriter, req *http
 	}, "", 0
 }
 
+func (s *WalletServer) ListQueryReviewHistoryRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
+	b, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return nil, err.Error(), -1
+	}
+
+	input := types.ListQueryReviewHistoryInput{}
+	err = json.Unmarshal(b, &input)
+	if err != nil {
+		return nil, err.Error(), -2
+	}
+
+	_, err = s.authProxy.UserByAuthCode(input.AuthCode)
+	if err != nil {
+		return nil, err.Error(), -3
+	}
+
+	reviewHis, err := s.mysqlCli.QueryReviewHistoryPagination(input.Limit, input.Offset, input.ReviewType)
+	if err != nil {
+		return nil, err.Error(), -4
+	}
+	return types.ListQueryReviewHistoryOutput{
+		ReviewListHistorys: reviewHis,
+	}, "", 0
+}
+
 func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
 	b, err := ioutil.ReadAll(req.Body)
 	if err != nil {
@@ -888,7 +920,7 @@ func (s *WalletServer) AddAccountRequest(w http.ResponseWriter, req *http.Reques
 		if input.PrivateKey == "" {
 			addr = input.Address
 			havePrivateKey = false
-		}else {
+		} else {
 			addr, err = s.walletAPI.ImportWallet(input.PrivateKey)
 			if err != nil {
 				return nil, err.Error(), -9
@@ -1235,7 +1267,7 @@ func (s *WalletServer) TransferBalanceRequest(w http.ResponseWriter, req *http.R
 	return msg, "", 0
 }
 
-func (s *WalletServer) WithdrawBalanceRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int){
+func (s *WalletServer) WithdrawBalanceRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
 	b, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		return nil, err.Error(), -1
@@ -1304,7 +1336,7 @@ func (s *WalletServer) AccountInfoRequest(w http.ResponseWriter, req *http.Reque
 	}, "", 0
 }
 
-func (s *WalletServer) MinerInfoReqeust(w http.ResponseWriter, req *http.Request) (interface{}, string, int){
+func (s *WalletServer) MinerInfoReqeust(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
 	b, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		return nil, err.Error(), -1
@@ -1331,7 +1363,7 @@ func (s *WalletServer) MinerInfoReqeust(w http.ResponseWriter, req *http.Request
 	count := 0
 
 	for _, value := range accounts {
-		if input.MinerID == value.MinerID && value.MinerWalletType == "owner"{
+		if input.MinerID == value.MinerID && value.MinerWalletType == "owner" {
 			count++
 			address = value.Address
 			customerID = value.CustomerID
@@ -1352,13 +1384,13 @@ func (s *WalletServer) MinerInfoReqeust(w http.ResponseWriter, req *http.Request
 	}
 
 	return types.MinerInfoOutput{
-		Available: available,
+		Available:    available,
 		CustomerName: customerName,
-		Owner: address,
+		Owner:        address,
 	}, "", 0
 }
 
-func (s *WalletServer) HandlingFeeRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int){
+func (s *WalletServer) HandlingFeeRequest(w http.ResponseWriter, req *http.Request) (interface{}, string, int) {
 	b, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		return nil, err.Error(), -1
@@ -1387,7 +1419,7 @@ func (s *WalletServer) HandlingFeeRequest(w http.ResponseWriter, req *http.Reque
 
 	cid, err := s.walletAPI.HandlingGas(input.Cid, nonce, input.GasLimit, input.GasFeeCap, input.GasPremium, from)
 	if err != nil {
-		return nil, err.Error(),  -6
+		return nil, err.Error(), -6
 	}
 
 	err = s.mysqlCli.UpdateHistoryCid(input.Cid, cid)
@@ -1446,7 +1478,7 @@ func (s *WalletServer) ListUsersRequest(w http.ResponseWriter, req *http.Request
 	}
 
 	userLists, err := s.authProxy.ListUsers()
-	
+
 	return types.ListUsersOutput{
 		Users: userLists,
 	}, "", 0

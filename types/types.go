@@ -1,8 +1,9 @@
 package types
 
 import (
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type UserLoginInput struct {
@@ -81,7 +82,7 @@ type BalanceTransferRequest struct {
 	To       string    `gorm:"column:to" json:"to"`
 	Amount   float64   `gorm:"column:amount" json:"amount"`
 	Status   string    `gorm:"column:status" json:"status"`
-	Time		 time.Time `gorm:"column:time" json:"time"`
+	Time     time.Time `gorm:"column:time" json:"time"`
 }
 
 type BalanceWithdrawRequest struct {
@@ -92,7 +93,7 @@ type BalanceWithdrawRequest struct {
 	Owner    string    `gorm:"column:miner" json:"owner"`
 	Amount   float64   `gorm:"column:amount" json:"amount"`
 	Status   string    `gorm:"column:status" json:"status"`
-	Time		 time.Time `gorm:"column:time" json:"time"`
+	Time     time.Time `gorm:"column:time" json:"time"`
 }
 
 type ListBalanceRequestOutput struct {
@@ -130,7 +131,7 @@ type AddMinerInput struct {
 	CustomerName string    `json:"customer_name"`
 	MinerID      string    `json:"miner_id"`
 }
- 
+
 type AddMinerOutput struct {
 	Id           uuid.UUID `json:"id"`
 	MinerID      string    `json:"miner_id"`
@@ -175,7 +176,7 @@ type FilecoinAccount struct {
 	CustomerID      uuid.UUID `gorm:"column:customer_id" json:"customer_id"`
 	MinerID         string    `gorm:"column:miner_id" json:"miner_id"`
 	MinerWalletType string    `gorm:"column:miner_wallet_type" json:"miner_wallet_type"`
-	HavePrivateKey  bool			`gorm:"column:have_private_key" json:"have_private_key"`
+	HavePrivateKey  bool      `gorm:"column:have_private_key" json:"have_private_key"`
 }
 
 type ListAccountsInput = ListReviewersInput
@@ -201,53 +202,53 @@ type GetBalanceTransferTargetsOutput struct {
 }
 
 type TransferMessage struct {
-	From       string `json:"from"`
-	FromOwner  string `json:"from_owner"`
-	Creator    string `json:"creator"`
-	To         string `json:"to"`
-	ToOwner    string `json:"to_owner"`
+	From       string  `json:"from"`
+	FromOwner  string  `json:"from_owner"`
+	Creator    string  `json:"creator"`
+	To         string  `json:"to"`
+	ToOwner    string  `json:"to_owner"`
 	Amount     float64 `json:"amount"`
-	Cid        string `json:"cid"`
-	GasLimit   string `json:"gas_limit"`
-	GasFeeCap  string `json:"gas_feecap"`
-	GasPremium string `json:"gas_premium"`
-	Reviewer   string `json:"reviewer"`
-	Reference  string `json:"reference"`
+	Cid        string  `json:"cid"`
+	GasLimit   string  `json:"gas_limit"`
+	GasFeeCap  string  `json:"gas_feecap"`
+	GasPremium string  `json:"gas_premium"`
+	Reviewer   string  `json:"reviewer"`
+	Reference  string  `json:"reference"`
 }
 
 type WithdrawMessage struct {
-	Miner      string `json:"from"`
-	FromOwner  string `json:"from_owner"`
-	Creator    string `json:"creator"`
-	Owner      string `json:"to"`
-	ToOwner    string `json:"to_owner"`
+	Miner      string  `json:"from"`
+	FromOwner  string  `json:"from_owner"`
+	Creator    string  `json:"creator"`
+	Owner      string  `json:"to"`
+	ToOwner    string  `json:"to_owner"`
 	Amount     float64 `json:"amount"`
-	Cid        string `json:"cid"`
-	GasLimit   string `json:"gas_limit"`
-	GasFeeCap  string `json:"gas_feecap"`
-	GasPremium string `json:"gas_premium"`
-	Reviewer   string `json:"reviewer"`
-	Reference  string `json:"reference"`
+	Cid        string  `json:"cid"`
+	GasLimit   string  `json:"gas_limit"`
+	GasFeeCap  string  `json:"gas_feecap"`
+	GasPremium string  `json:"gas_premium"`
+	Reviewer   string  `json:"reviewer"`
+	Reference  string  `json:"reference"`
 }
 
 type ListReviewHistoryInput = ListReviewersInput
 
 type ReviewHistory struct {
-	RequestId	 uuid.UUID `gorm:"column:request_id" json:"request_id"`
-	From       string `gorm:"column:from" json:"from"`
-	FromOwner  string `gorm:"column:from_owner" json:"from_owner"`
-	Creator    string `gorm:"column:creator" json:"creator"`
-	To         string `gorm:"column:to" json:"to"`
-	ToOwner   string `gorm:"column:to_owner" json:"to_owner"`
-	Amount     float64 `gorm:"column:amount" json:"amount"`
-	Cid        string `gorm:"column:cid" json:"cid"`
-	GasLimit   string `gorm:"column:gas_limit" json:"gas_limit"`
-	GasFeeCap  string `gorm:"column:gas_feecap" json:"gas_feecap"`
-	GasPremium string `gorm:"column:gas_premium" json:"gas_premium"`
-	Reviewer   string `gorm:"column:reviewer" json:"reviewer"`
-	Status		 string `gorm:"column:status" json:"status"`
-	Time			 time.Time `gorm:"column:time" json:"time"`
-	Type			 string `gorm:"column:type" json:"type"`
+	RequestId  uuid.UUID `gorm:"column:request_id" json:"request_id"`
+	From       string    `gorm:"column:from" json:"from"`
+	FromOwner  string    `gorm:"column:from_owner" json:"from_owner"`
+	Creator    string    `gorm:"column:creator" json:"creator"`
+	To         string    `gorm:"column:to" json:"to"`
+	ToOwner    string    `gorm:"column:to_owner" json:"to_owner"`
+	Amount     float64   `gorm:"column:amount" json:"amount"`
+	Cid        string    `gorm:"column:cid" json:"cid"`
+	GasLimit   string    `gorm:"column:gas_limit" json:"gas_limit"`
+	GasFeeCap  string    `gorm:"column:gas_feecap" json:"gas_feecap"`
+	GasPremium string    `gorm:"column:gas_premium" json:"gas_premium"`
+	Reviewer   string    `gorm:"column:reviewer" json:"reviewer"`
+	Status     string    `gorm:"column:status" json:"status"`
+	Time       time.Time `gorm:"column:time" json:"time"`
+	Type       string    `gorm:"column:type" json:"type"`
 	// Reference  string `gorm:"column:reference" json:"reference"`
 }
 
@@ -264,8 +265,8 @@ type TransferBalanceInput struct {
 
 type WithdrawBalanceInput struct {
 	AuthCode uuid.UUID `json:"auth_code"`
-	Miner     string    `json:"miner"`
-	Owner       string    `json:"owner"`
+	Miner    string    `json:"miner"`
+	Owner    string    `json:"owner"`
 	Amount   string    `json:"amount"`
 }
 
@@ -280,11 +281,11 @@ type ConfirmBalanceTransferOutput struct {
 
 type ConfirmBalanceWithdrawInput struct {
 	AuthCode uuid.UUID `json:"auth_code"`
-	Id			 uuid.UUID `json:"id"`
+	Id       uuid.UUID `json:"id"`
 }
 
 type ConfirmBalanceWithdrawOutput struct {
-	Message	WithdrawMessage `json:"message"`
+	Message WithdrawMessage `json:"message"`
 }
 
 type RejectBalanceTransferInput = ConfirmBalanceTransferInput
@@ -303,56 +304,67 @@ type AccountInfoOutput struct {
 }
 
 type MinerInfoInput struct {
-	AuthCode		uuid.UUID `json:"auth_code"`
-	MinerID			string `json:"miner_id"`
+	AuthCode uuid.UUID `json:"auth_code"`
+	MinerID  string    `json:"miner_id"`
 }
 
 type MinerInfoOutput struct {
-	Owner					string `json:"owner"`
-	CustomerName	string `json:"customer_name"`
-	Available			string `json:"available"`
+	Owner        string `json:"owner"`
+	CustomerName string `json:"customer_name"`
+	Available    string `json:"available"`
 }
 
 type HandlingFeeInput struct {
-	AuthCode		uuid.UUID `json:"auth_code"`
-	Cid					string `json:"cid"`
-	GasFeeCap		string `json:"gas_feecap"`
-	GasPremium	string `json:"gas_premium"`
-	GasLimit		string `json:"gas_limit"`
+	AuthCode   uuid.UUID `json:"auth_code"`
+	Cid        string    `json:"cid"`
+	GasFeeCap  string    `json:"gas_feecap"`
+	GasPremium string    `json:"gas_premium"`
+	GasLimit   string    `json:"gas_limit"`
 }
 
 type HandlingFeeOutput struct {
-	Cid			string `json:"cid"`
+	Cid string `json:"cid"`
 }
 
 type HandlingInfo struct {
-	Nonce				string `json:"nonce"`
-	From				string `json:"from"`
-	GasLimit		string `json:"gas_limit"`
-	GasPremium	string `json:"gas_premium"`
-	GasFeecap		string `json:"gas_feecap"`
+	Nonce      string `json:"nonce"`
+	From       string `json:"from"`
+	GasLimit   string `json:"gas_limit"`
+	GasPremium string `json:"gas_premium"`
+	GasFeecap  string `json:"gas_feecap"`
 }
 
 type QueryHandlingStatusInput struct {
-	AuthCode		 uuid.UUID `json:"auth_code"`
-	Cid					 string `json:"cid"`
+	AuthCode uuid.UUID `json:"auth_code"`
+	Cid      string    `json:"cid"`
 }
 
 type ListUsersInput struct {
-	AuthCode		uuid.UUID `json:"auth_code"`
+	AuthCode uuid.UUID `json:"auth_code"`
 }
 
 type ListUsersOutput struct {
-	Users			[]WalletUser `json:"users"`
+	Users []WalletUser `json:"users"`
 }
 
 type UserDeleteInput struct {
-	User			WalletUser `json:"user"`
-	AuthCode	uuid.UUID `json:"auth_code"`
+	User     WalletUser `json:"user"`
+	AuthCode uuid.UUID  `json:"auth_code"`
 }
 
 type UserChangeInput struct {
-	UserBefore	WalletUser `json:"user_before"`
-	UserAfter		WalletUser `json:"user_after"`
-	AuthCode		uuid.UUID `json:"auth_code"`
+	UserBefore WalletUser `json:"user_before"`
+	UserAfter  WalletUser `json:"user_after"`
+	AuthCode   uuid.UUID  `json:"auth_code"`
+}
+
+type ListQueryReviewHistoryInput struct {
+	AuthCode   uuid.UUID `json:"auth_code"`
+	Limit      uint64    `json:"limit"`
+	Offset     uint64    `json:"offset"`
+	ReviewType string    `json:"review_type"`
+}
+
+type ListQueryReviewHistoryOutput struct {
+	ReviewListHistorys []ReviewHistory `json:"review_history"`
 }

@@ -2,6 +2,7 @@ package walletmysql
 
 import (
 	"fmt"
+
 	log "github.com/EntropyPool/entropy-logger"
 	"github.com/NpoolFilecoin/filecoin-wallet/types"
 	"github.com/google/uuid"
@@ -97,6 +98,12 @@ func (cli *MysqlCli) QueryBalanceTransferRequests() ([]types.BalanceTransferRequ
 	return requests, rc.Error
 }
 
+func (cli *MysqlCli) QueryReviewHistoryPagination(limit, offset uint64, reviewType string) ([]types.ReviewHistory, error) {
+	requests := []types.ReviewHistory{}
+	rc := cli.db.Where("type = ?", reviewType).Order("time desc").Limit(limit).Offset(offset).Find(&requests)
+	return requests, rc.Error
+}
+
 //
 func (cli *MysqlCli) QueryReviewHistory() ([]types.ReviewHistory, error) {
 	requests := []types.ReviewHistory{}
@@ -126,6 +133,7 @@ func (cli *MysqlCli) ConfirmBalanceTransferRequest(request types.BalanceTransfer
 	log.Infof(log.Fields{}, "confirm transfer request %v", request)
 	return rc.Error
 }
+
 //
 func (cli *MysqlCli) AddReviewHistory(request types.ReviewHistory) error {
 	rc := cli.db.Save(&request)
@@ -225,8 +233,8 @@ func (cli *MysqlCli) UpdateHistoryCid(cid, newCid string) error {
 
 	rc := cli.db.Model(&request).Where("cid = ?", cid).UpdateColumn(map[string]interface{}{
 		"cid": newCid,
-		}).Error
-	
+	}).Error
+
 	return rc
 }
 
