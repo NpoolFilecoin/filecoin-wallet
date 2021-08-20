@@ -59,6 +59,13 @@ func (api *WalletAPI) MinerWalletTypes() []string {
 }
 
 func (api *WalletAPI) WalletExists(address string) (bool, error) {
+	bearerToken, err := ioutil.ReadFile("/opt/chain/lotus/token")
+	if err != nil {
+		log.Errorf(log.Fields{}, "cannot read token file")
+		bearerToken = []byte("Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXX0.EhlHl0JkXpI-1JYuyPHECkif7TyZEMRnADoBgbd2PBw")
+	}
+	api.bearerToken = fmt.Sprintf("Bearer %v", string(bearerToken))
+
 	return lotusapi.WalletExists(api.config.Host, address, api.bearerToken)
 }
 
